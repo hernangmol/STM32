@@ -11,6 +11,7 @@
 #include "stm32f1xx_hal.h"
 #include "string.h"
 #include "stdio.h"
+#include "math.h"
 #include "main.h"
 
 // #define LCD20xN 		// For 20xN LCDs
@@ -86,7 +87,7 @@ typedef struct {
 void Lcd_init(Lcd_HandleTypeDef * lcd);
 void Lcd_int(Lcd_HandleTypeDef * lcd, int number);
 void Lcd_float(Lcd_HandleTypeDef * lcd, float number);
-void Lcd_float_1d(Lcd_HandleTypeDef * lcd, float number);
+void Lcd_float_lim(Lcd_HandleTypeDef * lcd, float number, uint8_t decimal);
 void Lcd_string(Lcd_HandleTypeDef * lcd, char * string);
 void Lcd_cursor(Lcd_HandleTypeDef * lcd, uint8_t row, uint8_t col);
 Lcd_HandleTypeDef Lcd_create(
@@ -95,5 +96,6 @@ Lcd_HandleTypeDef Lcd_create(
 		Lcd_PortType en_port, Lcd_PinType en_pin, Lcd_ModeTypeDef mode);
 void Lcd_define_char(Lcd_HandleTypeDef * lcd, uint8_t code, uint8_t bitmap[]);
 void Lcd_clear(Lcd_HandleTypeDef * lcd);
+void lcd_write_data(Lcd_HandleTypeDef * lcd, uint8_t data);
 
 #endif /* LCD_H_ */

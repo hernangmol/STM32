@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "lcd.h"
+#include "math.h"
 
 /* USER CODE END Includes */
 
@@ -157,7 +158,37 @@ uint8_t DS18B20_Read(void)
 
 float DS18B20_Temp2Float(uint16_t number)
 {
-	return 123.5;
+	uint16_t aux;
+	float result = 0;
+	float signo;
+	uint16_t mask = 0b1111100000000000;
+	// extracción del signo
+	if((number & mask) > 0)
+		signo = -1;
+	else
+		signo = 1;
+	// calculo de la magnitud
+	mask = 0b0000011111111111;
+	// parte entera
+	if (signo == -1)
+	{                     // complemento A2
+		aux = ~number & mask;
+		aux+=1;
+	}
+	else
+	{
+		aux = number & mask;
+	}
+// parte decimal
+	result = 0;
+	mask = 0b0000000000000001;
+	for (int i=0;i<12;i++)
+	{
+		 if((aux & mask)>0)
+			 result = result + .0625 *pow(2, i);
+		 mask = mask << 1;
+	}
+	return (signo * result);
 }
 
 /* USER CODE END 0 */
@@ -222,6 +253,8 @@ int main(void)
 	  DS18B20_Write (0x44);  // convert t
 	  HAL_Delay (800);
 
+	  Presence = Presence; // ToDo: chequeo de errores
+
 	  Presence = DS18B20_Start ();
 	  HAL_Delay(1);
 	  DS18B20_Write (0xCC);  // skip ROM
@@ -229,18 +262,18 @@ int main(void)
 
 	  for(int i = 0; i<8; i++)
 		  scratchPad[i] = DS18B20_Read();
-	  uint16_t buffer = scratchPad[0];
-	  buffer = (buffer << 8) + scratchPad[1];
+	  uint16_t buffer = scratchPad[1];
+	  buffer = (buffer << 8) + scratchPad[0];
 	  temperature = DS18B20_Temp2Float(buffer);
 
 	  Lcd_cursor(&lcd, 0,0);
-	  Lcd_int(&lcd, Presence);
-	  Lcd_cursor(&lcd, 0,5);
-	  Lcd_int(&lcd, scratchPad[0]);
-	  Lcd_cursor(&lcd, 0,10);
-	  Lcd_int(&lcd, scratchPad[1]);
+	  Lcd_string(&lcd, "Temp Datalogger");
 	  Lcd_cursor(&lcd, 1,0);
-	  Lcd_float(&lcd, temperature);
+	  Lcd_string(&lcd, "T1=");
+	  Lcd_float_lim(&lcd, temperature, 1);
+	  Lcd_string(&lcd, " ");
+	  lcd_write_data(&lcd, 210); // imprime "°"
+	  Lcd_string(&lcd, "C");
 
 	  HAL_GPIO_TogglePin (GPIOC, LED_Pin);
 

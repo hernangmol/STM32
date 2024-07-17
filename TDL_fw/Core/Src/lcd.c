@@ -11,7 +11,7 @@ const uint8_t ROW_16[] = {0x00, 0x40, 0x10, 0x50};
 const uint8_t ROW_20[] = {0x00, 0x40, 0x14, 0x54};
 /************************************** Static declarations **************************************/
 
-static void lcd_write_data(Lcd_HandleTypeDef * lcd, uint8_t data);
+//static void lcd_write_data(Lcd_HandleTypeDef * lcd, uint8_t data);
 static void lcd_write_command(Lcd_HandleTypeDef * lcd, uint8_t command);
 static void lcd_write(Lcd_HandleTypeDef * lcd, uint8_t data, uint8_t len);
 
@@ -89,12 +89,14 @@ void Lcd_float(Lcd_HandleTypeDef * lcd, float number)
 /*
  * Write a number on the current position
  */
-void Lcd_float_1d(Lcd_HandleTypeDef * lcd, float number)
+void Lcd_float_lim(Lcd_HandleTypeDef * lcd, float number, uint8_t decimal)
 {
-	char buffer[11];
-	sprintf(buffer, "%3.1f", number);
-
-	Lcd_string(lcd, buffer);
+	int intPart = (int) number;
+	Lcd_int(lcd, intPart);
+	Lcd_string(lcd, ".");
+	number = number - (float)intPart;
+	number = number * pow(10,decimal);
+	Lcd_int(lcd, (int)number);
 }
 
 /**
