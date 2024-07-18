@@ -71,9 +71,16 @@ void Lcd_int(Lcd_HandleTypeDef * lcd, int number)
 {
 	char buffer[11];
 	sprintf(buffer, "%d", number);
-
 	Lcd_string(lcd, buffer);
 }
+
+void Lcd_int_hex(Lcd_HandleTypeDef * lcd, int number)
+{
+	char buffer[11];
+	sprintf(buffer, "%X", number);
+	Lcd_string(lcd, buffer);
+}
+
 
 /**
  * Write a number on the current position

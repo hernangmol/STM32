@@ -86,6 +86,7 @@ typedef struct {
 /************************************** Public functions **************************************/
 void Lcd_init(Lcd_HandleTypeDef * lcd);
 void Lcd_int(Lcd_HandleTypeDef * lcd, int number);
+void Lcd_int_hex(Lcd_HandleTypeDef * lcd, int number);
 void Lcd_float(Lcd_HandleTypeDef * lcd, float number);
 void Lcd_float_lim(Lcd_HandleTypeDef * lcd, float number, uint8_t decimal);
 void Lcd_string(Lcd_HandleTypeDef * lcd, char * string);
