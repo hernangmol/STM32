@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  000201dc  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00008cfc  00000000  00000000  00020205  2**0
+ 12 .debug_info   000094b2  00000000  00000000  00020205  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000018e0  00000000  00000000  00028f01  2**0
+ 13 .debug_abbrev 00001a9b  00000000  00000000  000296b7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000a98  00000000  00000000  0002a7e8  2**3
+ 14 .debug_aranges 00000ab0  00000000  00000000  0002b158  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000009c0  00000000  00000000  0002b280  2**3
+ 15 .debug_ranges 000009c8  00000000  00000000  0002bc08  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001856d  00000000  00000000  0002bc40  2**0
+ 16 .debug_macro  000187e3  00000000  00000000  0002c5d0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000aef1  00000000  00000000  000441ad  2**0
+ 17 .debug_line   0000b673  00000000  00000000  00044db3  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008a0af  00000000  00000000  0004f09e  2**0
+ 18 .debug_str    0008a0d5  00000000  00000000  00050426  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000d914d  2**0
+ 19 .comment      00000050  00000000  00000000  000da4fb  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00004104  00000000  00000000  000d91a0  2**2
+ 20 .debug_frame  00004114  00000000  00000000  000da54c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1365,987 +1365,977 @@ Disassembly of section .text:
  8000fde:	f04f 0000 	mov.w	r0, #0
  8000fe2:	4770      	bx	lr
 
-08000fe4 <Lcd_create>:
+08000fe4 <Set_Pin_Output>:
+#include "ds18b20.h"
+
+extern TIM_HandleTypeDef htim1;
+
+void Set_Pin_Output(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
+{
+ 8000fe4:	b580      	push	{r7, lr}
+ 8000fe6:	b086      	sub	sp, #24
+ 8000fe8:	af00      	add	r7, sp, #0
+ 8000fea:	6078      	str	r0, [r7, #4]
+ 8000fec:	460b      	mov	r3, r1
+ 8000fee:	807b      	strh	r3, [r7, #2]
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 8000ff0:	f107 0308 	add.w	r3, r7, #8
+ 8000ff4:	2200      	movs	r2, #0
+ 8000ff6:	601a      	str	r2, [r3, #0]
+ 8000ff8:	605a      	str	r2, [r3, #4]
+ 8000ffa:	609a      	str	r2, [r3, #8]
+ 8000ffc:	60da      	str	r2, [r3, #12]
+	GPIO_InitStruct.Pin = GPIO_Pin;
+ 8000ffe:	887b      	ldrh	r3, [r7, #2]
+ 8001000:	60bb      	str	r3, [r7, #8]
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 8001002:	2301      	movs	r3, #1
+ 8001004:	60fb      	str	r3, [r7, #12]
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 8001006:	2302      	movs	r3, #2
+ 8001008:	617b      	str	r3, [r7, #20]
+	HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
+ 800100a:	f107 0308 	add.w	r3, r7, #8
+ 800100e:	4619      	mov	r1, r3
+ 8001010:	6878      	ldr	r0, [r7, #4]
+ 8001012:	f000 ffb7 	bl	8001f84 <HAL_GPIO_Init>
+}
+ 8001016:	bf00      	nop
+ 8001018:	3718      	adds	r7, #24
+ 800101a:	46bd      	mov	sp, r7
+ 800101c:	bd80      	pop	{r7, pc}
+
+0800101e <Set_Pin_Input>:
+
+void Set_Pin_Input(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
+{
+ 800101e:	b580      	push	{r7, lr}
+ 8001020:	b086      	sub	sp, #24
+ 8001022:	af00      	add	r7, sp, #0
+ 8001024:	6078      	str	r0, [r7, #4]
+ 8001026:	460b      	mov	r3, r1
+ 8001028:	807b      	strh	r3, [r7, #2]
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 800102a:	f107 0308 	add.w	r3, r7, #8
+ 800102e:	2200      	movs	r2, #0
+ 8001030:	601a      	str	r2, [r3, #0]
+ 8001032:	605a      	str	r2, [r3, #4]
+ 8001034:	609a      	str	r2, [r3, #8]
+ 8001036:	60da      	str	r2, [r3, #12]
+	GPIO_InitStruct.Pin = GPIO_Pin;
+ 8001038:	887b      	ldrh	r3, [r7, #2]
+ 800103a:	60bb      	str	r3, [r7, #8]
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+ 800103c:	2300      	movs	r3, #0
+ 800103e:	60fb      	str	r3, [r7, #12]
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 8001040:	2300      	movs	r3, #0
+ 8001042:	613b      	str	r3, [r7, #16]
+	HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
+ 8001044:	f107 0308 	add.w	r3, r7, #8
+ 8001048:	4619      	mov	r1, r3
+ 800104a:	6878      	ldr	r0, [r7, #4]
+ 800104c:	f000 ff9a 	bl	8001f84 <HAL_GPIO_Init>
+}
+ 8001050:	bf00      	nop
+ 8001052:	3718      	adds	r7, #24
+ 8001054:	46bd      	mov	sp, r7
+ 8001056:	bd80      	pop	{r7, pc}
+
+08001058 <delay_us>:
+
+void delay_us (uint16_t us)
+{
+ 8001058:	b480      	push	{r7}
+ 800105a:	b083      	sub	sp, #12
+ 800105c:	af00      	add	r7, sp, #0
+ 800105e:	4603      	mov	r3, r0
+ 8001060:	80fb      	strh	r3, [r7, #6]
+	__HAL_TIM_SET_COUNTER(&htim1,0);  // set the counter value a 0
+ 8001062:	4b08      	ldr	r3, [pc, #32]	; (8001084 <delay_us+0x2c>)
+ 8001064:	681b      	ldr	r3, [r3, #0]
+ 8001066:	2200      	movs	r2, #0
+ 8001068:	625a      	str	r2, [r3, #36]	; 0x24
+	while (__HAL_TIM_GET_COUNTER(&htim1) < us);  // wait for the counter to reach the us input in the parameter
+ 800106a:	bf00      	nop
+ 800106c:	4b05      	ldr	r3, [pc, #20]	; (8001084 <delay_us+0x2c>)
+ 800106e:	681b      	ldr	r3, [r3, #0]
+ 8001070:	6a5a      	ldr	r2, [r3, #36]	; 0x24
+ 8001072:	88fb      	ldrh	r3, [r7, #6]
+ 8001074:	429a      	cmp	r2, r3
+ 8001076:	d3f9      	bcc.n	800106c <delay_us+0x14>
+}
+ 8001078:	bf00      	nop
+ 800107a:	bf00      	nop
+ 800107c:	370c      	adds	r7, #12
+ 800107e:	46bd      	mov	sp, r7
+ 8001080:	bc80      	pop	{r7}
+ 8001082:	4770      	bx	lr
+ 8001084:	200001f8 	.word	0x200001f8
+
+08001088 <DS18B20_Start>:
+
+uint8_t DS18B20_Start (void)
+{
+ 8001088:	b580      	push	{r7, lr}
+ 800108a:	b082      	sub	sp, #8
+ 800108c:	af00      	add	r7, sp, #0
+	uint8_t Response = 0;
+ 800108e:	2300      	movs	r3, #0
+ 8001090:	71fb      	strb	r3, [r7, #7]
+	Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);   // set the pin as output
+ 8001092:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 8001096:	4815      	ldr	r0, [pc, #84]	; (80010ec <DS18B20_Start+0x64>)
+ 8001098:	f7ff ffa4 	bl	8000fe4 <Set_Pin_Output>
+	HAL_GPIO_WritePin (DS18B20_PORT, DS18B20_PIN, 0);  // pull the pin low
+ 800109c:	2200      	movs	r2, #0
+ 800109e:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 80010a2:	4812      	ldr	r0, [pc, #72]	; (80010ec <DS18B20_Start+0x64>)
+ 80010a4:	f001 f909 	bl	80022ba <HAL_GPIO_WritePin>
+	delay_us (480);   // delay according to datasheet
+ 80010a8:	f44f 70f0 	mov.w	r0, #480	; 0x1e0
+ 80010ac:	f7ff ffd4 	bl	8001058 <delay_us>
+	Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);    // set the pin as input
+ 80010b0:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 80010b4:	480d      	ldr	r0, [pc, #52]	; (80010ec <DS18B20_Start+0x64>)
+ 80010b6:	f7ff ffb2 	bl	800101e <Set_Pin_Input>
+	delay_us (80);    // delay according to datasheet
+ 80010ba:	2050      	movs	r0, #80	; 0x50
+ 80010bc:	f7ff ffcc 	bl	8001058 <delay_us>
+	if (!(HAL_GPIO_ReadPin (DS18B20_PORT, DS18B20_PIN))) Response = 1;    // if the pin is low i.e the presence pulse is detected
+ 80010c0:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 80010c4:	4809      	ldr	r0, [pc, #36]	; (80010ec <DS18B20_Start+0x64>)
+ 80010c6:	f001 f8e1 	bl	800228c <HAL_GPIO_ReadPin>
+ 80010ca:	4603      	mov	r3, r0
+ 80010cc:	2b00      	cmp	r3, #0
+ 80010ce:	d102      	bne.n	80010d6 <DS18B20_Start+0x4e>
+ 80010d0:	2301      	movs	r3, #1
+ 80010d2:	71fb      	strb	r3, [r7, #7]
+ 80010d4:	e001      	b.n	80010da <DS18B20_Start+0x52>
+	else Response = -1;
+ 80010d6:	23ff      	movs	r3, #255	; 0xff
+ 80010d8:	71fb      	strb	r3, [r7, #7]
+	delay_us (400); // 480 us delay totally.
+ 80010da:	f44f 70c8 	mov.w	r0, #400	; 0x190
+ 80010de:	f7ff ffbb 	bl	8001058 <delay_us>
+	return Response;
+ 80010e2:	79fb      	ldrb	r3, [r7, #7]
+}
+ 80010e4:	4618      	mov	r0, r3
+ 80010e6:	3708      	adds	r7, #8
+ 80010e8:	46bd      	mov	sp, r7
+ 80010ea:	bd80      	pop	{r7, pc}
+ 80010ec:	40010c00 	.word	0x40010c00
+
+080010f0 <DS18B20_Write>:
+
+void DS18B20_Write (uint8_t data)
+{
+ 80010f0:	b580      	push	{r7, lr}
+ 80010f2:	b084      	sub	sp, #16
+ 80010f4:	af00      	add	r7, sp, #0
+ 80010f6:	4603      	mov	r3, r0
+ 80010f8:	71fb      	strb	r3, [r7, #7]
+	Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);  // set as output
+ 80010fa:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 80010fe:	4821      	ldr	r0, [pc, #132]	; (8001184 <DS18B20_Write+0x94>)
+ 8001100:	f7ff ff70 	bl	8000fe4 <Set_Pin_Output>
+
+	for (int i=0; i<8; i++)
+ 8001104:	2300      	movs	r3, #0
+ 8001106:	60fb      	str	r3, [r7, #12]
+ 8001108:	e034      	b.n	8001174 <DS18B20_Write+0x84>
+	{
+
+		if ((data & (1<<i))!=0)  // if the bit is high
+ 800110a:	79fa      	ldrb	r2, [r7, #7]
+ 800110c:	68fb      	ldr	r3, [r7, #12]
+ 800110e:	fa42 f303 	asr.w	r3, r2, r3
+ 8001112:	f003 0301 	and.w	r3, r3, #1
+ 8001116:	2b00      	cmp	r3, #0
+ 8001118:	d016      	beq.n	8001148 <DS18B20_Write+0x58>
+		{
+			// write 1
+			Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);  // set as output
+ 800111a:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 800111e:	4819      	ldr	r0, [pc, #100]	; (8001184 <DS18B20_Write+0x94>)
+ 8001120:	f7ff ff60 	bl	8000fe4 <Set_Pin_Output>
+			HAL_GPIO_WritePin (DS18B20_PORT, DS18B20_PIN, 0);  // pull the pin LOW
+ 8001124:	2200      	movs	r2, #0
+ 8001126:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 800112a:	4816      	ldr	r0, [pc, #88]	; (8001184 <DS18B20_Write+0x94>)
+ 800112c:	f001 f8c5 	bl	80022ba <HAL_GPIO_WritePin>
+			delay_us (1);  // wait for 1 us
+ 8001130:	2001      	movs	r0, #1
+ 8001132:	f7ff ff91 	bl	8001058 <delay_us>
+			Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);  // set as input
+ 8001136:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 800113a:	4812      	ldr	r0, [pc, #72]	; (8001184 <DS18B20_Write+0x94>)
+ 800113c:	f7ff ff6f 	bl	800101e <Set_Pin_Input>
+			delay_us (50);  // wait for 60 us
+ 8001140:	2032      	movs	r0, #50	; 0x32
+ 8001142:	f7ff ff89 	bl	8001058 <delay_us>
+ 8001146:	e012      	b.n	800116e <DS18B20_Write+0x7e>
+		}
+		else  // if the bit is low
+		{
+			// write 0
+			Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);
+ 8001148:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 800114c:	480d      	ldr	r0, [pc, #52]	; (8001184 <DS18B20_Write+0x94>)
+ 800114e:	f7ff ff49 	bl	8000fe4 <Set_Pin_Output>
+			HAL_GPIO_WritePin (DS18B20_PORT, DS18B20_PIN, 0);  // pull the pin LOW
+ 8001152:	2200      	movs	r2, #0
+ 8001154:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 8001158:	480a      	ldr	r0, [pc, #40]	; (8001184 <DS18B20_Write+0x94>)
+ 800115a:	f001 f8ae 	bl	80022ba <HAL_GPIO_WritePin>
+			delay_us (50);  // wait for 60 us
+ 800115e:	2032      	movs	r0, #50	; 0x32
+ 8001160:	f7ff ff7a 	bl	8001058 <delay_us>
+			Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);
+ 8001164:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 8001168:	4806      	ldr	r0, [pc, #24]	; (8001184 <DS18B20_Write+0x94>)
+ 800116a:	f7ff ff58 	bl	800101e <Set_Pin_Input>
+	for (int i=0; i<8; i++)
+ 800116e:	68fb      	ldr	r3, [r7, #12]
+ 8001170:	3301      	adds	r3, #1
+ 8001172:	60fb      	str	r3, [r7, #12]
+ 8001174:	68fb      	ldr	r3, [r7, #12]
+ 8001176:	2b07      	cmp	r3, #7
+ 8001178:	ddc7      	ble.n	800110a <DS18B20_Write+0x1a>
+		}
+	}
+}
+ 800117a:	bf00      	nop
+ 800117c:	bf00      	nop
+ 800117e:	3710      	adds	r7, #16
+ 8001180:	46bd      	mov	sp, r7
+ 8001182:	bd80      	pop	{r7, pc}
+ 8001184:	40010c00 	.word	0x40010c00
+
+08001188 <DS18B20_Read>:
+
+uint8_t DS18B20_Read(void)
+{
+ 8001188:	b580      	push	{r7, lr}
+ 800118a:	b082      	sub	sp, #8
+ 800118c:	af00      	add	r7, sp, #0
+	uint8_t value=0;
+ 800118e:	2300      	movs	r3, #0
+ 8001190:	71fb      	strb	r3, [r7, #7]
+	Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);  // set as input
+ 8001192:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 8001196:	481c      	ldr	r0, [pc, #112]	; (8001208 <DS18B20_Read+0x80>)
+ 8001198:	f7ff ff41 	bl	800101e <Set_Pin_Input>
+	for (int i=0;i<8;i++)
+ 800119c:	2300      	movs	r3, #0
+ 800119e:	603b      	str	r3, [r7, #0]
+ 80011a0:	e02a      	b.n	80011f8 <DS18B20_Read+0x70>
+	{
+		Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);  // set as output
+ 80011a2:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 80011a6:	4818      	ldr	r0, [pc, #96]	; (8001208 <DS18B20_Read+0x80>)
+ 80011a8:	f7ff ff1c 	bl	8000fe4 <Set_Pin_Output>
+		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_9, 0);  // pull the data pin LOW
+ 80011ac:	2200      	movs	r2, #0
+ 80011ae:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 80011b2:	4815      	ldr	r0, [pc, #84]	; (8001208 <DS18B20_Read+0x80>)
+ 80011b4:	f001 f881 	bl	80022ba <HAL_GPIO_WritePin>
+		delay_us (2);  // wait for 2 us
+ 80011b8:	2002      	movs	r0, #2
+ 80011ba:	f7ff ff4d 	bl	8001058 <delay_us>
+		Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);  // set as input
+ 80011be:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 80011c2:	4811      	ldr	r0, [pc, #68]	; (8001208 <DS18B20_Read+0x80>)
+ 80011c4:	f7ff ff2b 	bl	800101e <Set_Pin_Input>
+		if (HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_9))  // if the pin is HIGH
+ 80011c8:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 80011cc:	480e      	ldr	r0, [pc, #56]	; (8001208 <DS18B20_Read+0x80>)
+ 80011ce:	f001 f85d 	bl	800228c <HAL_GPIO_ReadPin>
+ 80011d2:	4603      	mov	r3, r0
+ 80011d4:	2b00      	cmp	r3, #0
+ 80011d6:	d009      	beq.n	80011ec <DS18B20_Read+0x64>
+		{
+			value |= 1<<i;  // read = 1
+ 80011d8:	2201      	movs	r2, #1
+ 80011da:	683b      	ldr	r3, [r7, #0]
+ 80011dc:	fa02 f303 	lsl.w	r3, r2, r3
+ 80011e0:	b25a      	sxtb	r2, r3
+ 80011e2:	f997 3007 	ldrsb.w	r3, [r7, #7]
+ 80011e6:	4313      	orrs	r3, r2
+ 80011e8:	b25b      	sxtb	r3, r3
+ 80011ea:	71fb      	strb	r3, [r7, #7]
+		}
+		delay_us (60);  // wait for 60 us
+ 80011ec:	203c      	movs	r0, #60	; 0x3c
+ 80011ee:	f7ff ff33 	bl	8001058 <delay_us>
+	for (int i=0;i<8;i++)
+ 80011f2:	683b      	ldr	r3, [r7, #0]
+ 80011f4:	3301      	adds	r3, #1
+ 80011f6:	603b      	str	r3, [r7, #0]
+ 80011f8:	683b      	ldr	r3, [r7, #0]
+ 80011fa:	2b07      	cmp	r3, #7
+ 80011fc:	ddd1      	ble.n	80011a2 <DS18B20_Read+0x1a>
+	}
+	return value;
+ 80011fe:	79fb      	ldrb	r3, [r7, #7]
+}
+ 8001200:	4618      	mov	r0, r3
+ 8001202:	3708      	adds	r7, #8
+ 8001204:	46bd      	mov	sp, r7
+ 8001206:	bd80      	pop	{r7, pc}
+ 8001208:	40010c00 	.word	0x40010c00
+
+0800120c <DS18B20_Temp2Float>:
+
+
+float DS18B20_Temp2Float(uint16_t number)
+{
+ 800120c:	b5b0      	push	{r4, r5, r7, lr}
+ 800120e:	b088      	sub	sp, #32
+ 8001210:	af00      	add	r7, sp, #0
+ 8001212:	4603      	mov	r3, r0
+ 8001214:	80fb      	strh	r3, [r7, #6]
+	uint16_t aux;
+	float result = 0;
+ 8001216:	f04f 0300 	mov.w	r3, #0
+ 800121a:	61bb      	str	r3, [r7, #24]
+	float signo;
+	uint16_t mask = 0b1111100000000000;
+ 800121c:	f44f 4378 	mov.w	r3, #63488	; 0xf800
+ 8001220:	827b      	strh	r3, [r7, #18]
+	// extracción del signo
+	if((number & mask) > 0)
+ 8001222:	88fa      	ldrh	r2, [r7, #6]
+ 8001224:	8a7b      	ldrh	r3, [r7, #18]
+ 8001226:	4013      	ands	r3, r2
+ 8001228:	b29b      	uxth	r3, r3
+ 800122a:	2b00      	cmp	r3, #0
+ 800122c:	d002      	beq.n	8001234 <DS18B20_Temp2Float+0x28>
+		signo = -1;
+ 800122e:	4b32      	ldr	r3, [pc, #200]	; (80012f8 <DS18B20_Temp2Float+0xec>)
+ 8001230:	617b      	str	r3, [r7, #20]
+ 8001232:	e002      	b.n	800123a <DS18B20_Temp2Float+0x2e>
+	else
+		signo = 1;
+ 8001234:	f04f 537e 	mov.w	r3, #1065353216	; 0x3f800000
+ 8001238:	617b      	str	r3, [r7, #20]
+	// calculo de la magnitud
+	mask = 0b0000011111111111;
+ 800123a:	f240 73ff 	movw	r3, #2047	; 0x7ff
+ 800123e:	827b      	strh	r3, [r7, #18]
+	// parte entera
+	if (signo == -1)
+ 8001240:	492d      	ldr	r1, [pc, #180]	; (80012f8 <DS18B20_Temp2Float+0xec>)
+ 8001242:	6978      	ldr	r0, [r7, #20]
+ 8001244:	f7ff fe76 	bl	8000f34 <__aeabi_fcmpeq>
+ 8001248:	4603      	mov	r3, r0
+ 800124a:	2b00      	cmp	r3, #0
+ 800124c:	d00c      	beq.n	8001268 <DS18B20_Temp2Float+0x5c>
+	{                     // complemento A2
+		aux = ~number & mask;
+ 800124e:	f9b7 3006 	ldrsh.w	r3, [r7, #6]
+ 8001252:	43db      	mvns	r3, r3
+ 8001254:	b21a      	sxth	r2, r3
+ 8001256:	f9b7 3012 	ldrsh.w	r3, [r7, #18]
+ 800125a:	4013      	ands	r3, r2
+ 800125c:	b21b      	sxth	r3, r3
+ 800125e:	83fb      	strh	r3, [r7, #30]
+		aux+=1;
+ 8001260:	8bfb      	ldrh	r3, [r7, #30]
+ 8001262:	3301      	adds	r3, #1
+ 8001264:	83fb      	strh	r3, [r7, #30]
+ 8001266:	e003      	b.n	8001270 <DS18B20_Temp2Float+0x64>
+	}
+	else
+	{
+		aux = number & mask;
+ 8001268:	88fa      	ldrh	r2, [r7, #6]
+ 800126a:	8a7b      	ldrh	r3, [r7, #18]
+ 800126c:	4013      	ands	r3, r2
+ 800126e:	83fb      	strh	r3, [r7, #30]
+	}
+// parte decimal
+	result = 0;
+ 8001270:	f04f 0300 	mov.w	r3, #0
+ 8001274:	61bb      	str	r3, [r7, #24]
+	mask = 0b0000000000000001;
+ 8001276:	2301      	movs	r3, #1
+ 8001278:	827b      	strh	r3, [r7, #18]
+	for (int i=0;i<12;i++)
+ 800127a:	2300      	movs	r3, #0
+ 800127c:	60fb      	str	r3, [r7, #12]
+ 800127e:	e02e      	b.n	80012de <DS18B20_Temp2Float+0xd2>
+	{
+		 if((aux & mask)>0)
+ 8001280:	8bfa      	ldrh	r2, [r7, #30]
+ 8001282:	8a7b      	ldrh	r3, [r7, #18]
+ 8001284:	4013      	ands	r3, r2
+ 8001286:	b29b      	uxth	r3, r3
+ 8001288:	2b00      	cmp	r3, #0
+ 800128a:	d022      	beq.n	80012d2 <DS18B20_Temp2Float+0xc6>
+			 result = result + .0625 *pow(2, i);
+ 800128c:	69b8      	ldr	r0, [r7, #24]
+ 800128e:	f7ff f97f 	bl	8000590 <__aeabi_f2d>
+ 8001292:	4604      	mov	r4, r0
+ 8001294:	460d      	mov	r5, r1
+ 8001296:	68f8      	ldr	r0, [r7, #12]
+ 8001298:	f7ff f968 	bl	800056c <__aeabi_i2d>
+ 800129c:	4602      	mov	r2, r0
+ 800129e:	460b      	mov	r3, r1
+ 80012a0:	f04f 0000 	mov.w	r0, #0
+ 80012a4:	f04f 4180 	mov.w	r1, #1073741824	; 0x40000000
+ 80012a8:	f004 fdda 	bl	8005e60 <pow>
+ 80012ac:	f04f 0200 	mov.w	r2, #0
+ 80012b0:	4b12      	ldr	r3, [pc, #72]	; (80012fc <DS18B20_Temp2Float+0xf0>)
+ 80012b2:	f7ff f9c5 	bl	8000640 <__aeabi_dmul>
+ 80012b6:	4602      	mov	r2, r0
+ 80012b8:	460b      	mov	r3, r1
+ 80012ba:	4620      	mov	r0, r4
+ 80012bc:	4629      	mov	r1, r5
+ 80012be:	f7ff f809 	bl	80002d4 <__adddf3>
+ 80012c2:	4602      	mov	r2, r0
+ 80012c4:	460b      	mov	r3, r1
+ 80012c6:	4610      	mov	r0, r2
+ 80012c8:	4619      	mov	r1, r3
+ 80012ca:	f7ff fc91 	bl	8000bf0 <__aeabi_d2f>
+ 80012ce:	4603      	mov	r3, r0
+ 80012d0:	61bb      	str	r3, [r7, #24]
+		 mask = mask << 1;
+ 80012d2:	8a7b      	ldrh	r3, [r7, #18]
+ 80012d4:	005b      	lsls	r3, r3, #1
+ 80012d6:	827b      	strh	r3, [r7, #18]
+	for (int i=0;i<12;i++)
+ 80012d8:	68fb      	ldr	r3, [r7, #12]
+ 80012da:	3301      	adds	r3, #1
+ 80012dc:	60fb      	str	r3, [r7, #12]
+ 80012de:	68fb      	ldr	r3, [r7, #12]
+ 80012e0:	2b0b      	cmp	r3, #11
+ 80012e2:	ddcd      	ble.n	8001280 <DS18B20_Temp2Float+0x74>
+	}
+	return (signo * result);
+ 80012e4:	69b9      	ldr	r1, [r7, #24]
+ 80012e6:	6978      	ldr	r0, [r7, #20]
+ 80012e8:	f7fe ff3a 	bl	8000160 <__aeabi_fmul>
+ 80012ec:	4603      	mov	r3, r0
+}
+ 80012ee:	4618      	mov	r0, r3
+ 80012f0:	3720      	adds	r7, #32
+ 80012f2:	46bd      	mov	sp, r7
+ 80012f4:	bdb0      	pop	{r4, r5, r7, pc}
+ 80012f6:	bf00      	nop
+ 80012f8:	bf800000 	.word	0xbf800000
+ 80012fc:	3fb00000 	.word	0x3fb00000
+
+08001300 <Lcd_create>:
  */
 Lcd_HandleTypeDef Lcd_create(
 		Lcd_PortType port[], Lcd_PinType pin[],
 		Lcd_PortType rs_port, Lcd_PinType rs_pin,
 		Lcd_PortType en_port, Lcd_PinType en_pin, Lcd_ModeTypeDef mode)
 {
- 8000fe4:	b5b0      	push	{r4, r5, r7, lr}
- 8000fe6:	b08a      	sub	sp, #40	; 0x28
- 8000fe8:	af00      	add	r7, sp, #0
- 8000fea:	60f8      	str	r0, [r7, #12]
- 8000fec:	60b9      	str	r1, [r7, #8]
- 8000fee:	607a      	str	r2, [r7, #4]
- 8000ff0:	603b      	str	r3, [r7, #0]
+ 8001300:	b5b0      	push	{r4, r5, r7, lr}
+ 8001302:	b08a      	sub	sp, #40	; 0x28
+ 8001304:	af00      	add	r7, sp, #0
+ 8001306:	60f8      	str	r0, [r7, #12]
+ 8001308:	60b9      	str	r1, [r7, #8]
+ 800130a:	607a      	str	r2, [r7, #4]
+ 800130c:	603b      	str	r3, [r7, #0]
 	Lcd_HandleTypeDef lcd;
 
 	lcd.mode = mode;
- 8000ff2:	f897 3044 	ldrb.w	r3, [r7, #68]	; 0x44
- 8000ff6:	f887 3026 	strb.w	r3, [r7, #38]	; 0x26
+ 800130e:	f897 3044 	ldrb.w	r3, [r7, #68]	; 0x44
+ 8001312:	f887 3026 	strb.w	r3, [r7, #38]	; 0x26
 
 	lcd.en_pin = en_pin;
- 8000ffa:	f8b7 3040 	ldrh.w	r3, [r7, #64]	; 0x40
- 8000ffe:	84bb      	strh	r3, [r7, #36]	; 0x24
+ 8001316:	f8b7 3040 	ldrh.w	r3, [r7, #64]	; 0x40
+ 800131a:	84bb      	strh	r3, [r7, #36]	; 0x24
 	lcd.en_port = en_port;
- 8001000:	6bfb      	ldr	r3, [r7, #60]	; 0x3c
- 8001002:	623b      	str	r3, [r7, #32]
+ 800131c:	6bfb      	ldr	r3, [r7, #60]	; 0x3c
+ 800131e:	623b      	str	r3, [r7, #32]
 
 	lcd.rs_pin = rs_pin;
- 8001004:	8f3b      	ldrh	r3, [r7, #56]	; 0x38
- 8001006:	83bb      	strh	r3, [r7, #28]
+ 8001320:	8f3b      	ldrh	r3, [r7, #56]	; 0x38
+ 8001322:	83bb      	strh	r3, [r7, #28]
 	lcd.rs_port = rs_port;
- 8001008:	683b      	ldr	r3, [r7, #0]
- 800100a:	61bb      	str	r3, [r7, #24]
+ 8001324:	683b      	ldr	r3, [r7, #0]
+ 8001326:	61bb      	str	r3, [r7, #24]
 
 	lcd.data_pin = pin;
- 800100c:	687b      	ldr	r3, [r7, #4]
- 800100e:	617b      	str	r3, [r7, #20]
+ 8001328:	687b      	ldr	r3, [r7, #4]
+ 800132a:	617b      	str	r3, [r7, #20]
 	lcd.data_port = port;
- 8001010:	68bb      	ldr	r3, [r7, #8]
- 8001012:	613b      	str	r3, [r7, #16]
+ 800132c:	68bb      	ldr	r3, [r7, #8]
+ 800132e:	613b      	str	r3, [r7, #16]
 
 	Lcd_init(&lcd);
- 8001014:	f107 0310 	add.w	r3, r7, #16
- 8001018:	4618      	mov	r0, r3
- 800101a:	f000 f80e 	bl	800103a <Lcd_init>
+ 8001330:	f107 0310 	add.w	r3, r7, #16
+ 8001334:	4618      	mov	r0, r3
+ 8001336:	f000 f80e 	bl	8001356 <Lcd_init>
 
 	return lcd;
- 800101e:	68fb      	ldr	r3, [r7, #12]
- 8001020:	461d      	mov	r5, r3
- 8001022:	f107 0410 	add.w	r4, r7, #16
- 8001026:	cc0f      	ldmia	r4!, {r0, r1, r2, r3}
- 8001028:	c50f      	stmia	r5!, {r0, r1, r2, r3}
- 800102a:	e894 0003 	ldmia.w	r4, {r0, r1}
- 800102e:	e885 0003 	stmia.w	r5, {r0, r1}
+ 800133a:	68fb      	ldr	r3, [r7, #12]
+ 800133c:	461d      	mov	r5, r3
+ 800133e:	f107 0410 	add.w	r4, r7, #16
+ 8001342:	cc0f      	ldmia	r4!, {r0, r1, r2, r3}
+ 8001344:	c50f      	stmia	r5!, {r0, r1, r2, r3}
+ 8001346:	e894 0003 	ldmia.w	r4, {r0, r1}
+ 800134a:	e885 0003 	stmia.w	r5, {r0, r1}
 }
- 8001032:	68f8      	ldr	r0, [r7, #12]
- 8001034:	3728      	adds	r7, #40	; 0x28
- 8001036:	46bd      	mov	sp, r7
- 8001038:	bdb0      	pop	{r4, r5, r7, pc}
+ 800134e:	68f8      	ldr	r0, [r7, #12]
+ 8001350:	3728      	adds	r7, #40	; 0x28
+ 8001352:	46bd      	mov	sp, r7
+ 8001354:	bdb0      	pop	{r4, r5, r7, pc}
 
-0800103a <Lcd_init>:
+08001356 <Lcd_init>:
 
 /**
  * Initialize 16x2-lcd without cursor
  */
 void Lcd_init(Lcd_HandleTypeDef * lcd)
 {
- 800103a:	b580      	push	{r7, lr}
- 800103c:	b082      	sub	sp, #8
- 800103e:	af00      	add	r7, sp, #0
- 8001040:	6078      	str	r0, [r7, #4]
+ 8001356:	b580      	push	{r7, lr}
+ 8001358:	b082      	sub	sp, #8
+ 800135a:	af00      	add	r7, sp, #0
+ 800135c:	6078      	str	r0, [r7, #4]
 	if(lcd->mode == LCD_4_BIT_MODE)
- 8001042:	687b      	ldr	r3, [r7, #4]
- 8001044:	7d9b      	ldrb	r3, [r3, #22]
- 8001046:	2b00      	cmp	r3, #0
- 8001048:	d10c      	bne.n	8001064 <Lcd_init+0x2a>
+ 800135e:	687b      	ldr	r3, [r7, #4]
+ 8001360:	7d9b      	ldrb	r3, [r3, #22]
+ 8001362:	2b00      	cmp	r3, #0
+ 8001364:	d10c      	bne.n	8001380 <Lcd_init+0x2a>
 	{
 			lcd_write_command(lcd, 0x33);
- 800104a:	2133      	movs	r1, #51	; 0x33
- 800104c:	6878      	ldr	r0, [r7, #4]
- 800104e:	f000 f8bb 	bl	80011c8 <lcd_write_command>
+ 8001366:	2133      	movs	r1, #51	; 0x33
+ 8001368:	6878      	ldr	r0, [r7, #4]
+ 800136a:	f000 f8bb 	bl	80014e4 <lcd_write_command>
 			lcd_write_command(lcd, 0x32);
- 8001052:	2132      	movs	r1, #50	; 0x32
- 8001054:	6878      	ldr	r0, [r7, #4]
- 8001056:	f000 f8b7 	bl	80011c8 <lcd_write_command>
+ 800136e:	2132      	movs	r1, #50	; 0x32
+ 8001370:	6878      	ldr	r0, [r7, #4]
+ 8001372:	f000 f8b7 	bl	80014e4 <lcd_write_command>
 			lcd_write_command(lcd, FUNCTION_SET | OPT_N);				// 4-bit mode
- 800105a:	2128      	movs	r1, #40	; 0x28
- 800105c:	6878      	ldr	r0, [r7, #4]
- 800105e:	f000 f8b3 	bl	80011c8 <lcd_write_command>
- 8001062:	e003      	b.n	800106c <Lcd_init+0x32>
+ 8001376:	2128      	movs	r1, #40	; 0x28
+ 8001378:	6878      	ldr	r0, [r7, #4]
+ 800137a:	f000 f8b3 	bl	80014e4 <lcd_write_command>
+ 800137e:	e003      	b.n	8001388 <Lcd_init+0x32>
 	}
 	else
 		lcd_write_command(lcd, FUNCTION_SET | OPT_DL | OPT_N);
- 8001064:	2138      	movs	r1, #56	; 0x38
- 8001066:	6878      	ldr	r0, [r7, #4]
- 8001068:	f000 f8ae 	bl	80011c8 <lcd_write_command>
+ 8001380:	2138      	movs	r1, #56	; 0x38
+ 8001382:	6878      	ldr	r0, [r7, #4]
+ 8001384:	f000 f8ae 	bl	80014e4 <lcd_write_command>
 
 
 	lcd_write_command(lcd, CLEAR_DISPLAY);						// Clear screen
- 800106c:	2101      	movs	r1, #1
- 800106e:	6878      	ldr	r0, [r7, #4]
- 8001070:	f000 f8aa 	bl	80011c8 <lcd_write_command>
+ 8001388:	2101      	movs	r1, #1
+ 800138a:	6878      	ldr	r0, [r7, #4]
+ 800138c:	f000 f8aa 	bl	80014e4 <lcd_write_command>
 	lcd_write_command(lcd, DISPLAY_ON_OFF_CONTROL | OPT_D);		// Lcd-on, cursor-off, no-blink
- 8001074:	210c      	movs	r1, #12
- 8001076:	6878      	ldr	r0, [r7, #4]
- 8001078:	f000 f8a6 	bl	80011c8 <lcd_write_command>
+ 8001390:	210c      	movs	r1, #12
+ 8001392:	6878      	ldr	r0, [r7, #4]
+ 8001394:	f000 f8a6 	bl	80014e4 <lcd_write_command>
 	lcd_write_command(lcd, ENTRY_MODE_SET | OPT_INC);			// Increment cursor
- 800107c:	2106      	movs	r1, #6
- 800107e:	6878      	ldr	r0, [r7, #4]
- 8001080:	f000 f8a2 	bl	80011c8 <lcd_write_command>
+ 8001398:	2106      	movs	r1, #6
+ 800139a:	6878      	ldr	r0, [r7, #4]
+ 800139c:	f000 f8a2 	bl	80014e4 <lcd_write_command>
 }
- 8001084:	bf00      	nop
- 8001086:	3708      	adds	r7, #8
- 8001088:	46bd      	mov	sp, r7
- 800108a:	bd80      	pop	{r7, pc}
+ 80013a0:	bf00      	nop
+ 80013a2:	3708      	adds	r7, #8
+ 80013a4:	46bd      	mov	sp, r7
+ 80013a6:	bd80      	pop	{r7, pc}
 
-0800108c <Lcd_int>:
+080013a8 <Lcd_int>:
 
 /**
  * Write a number on the current position
  */
 void Lcd_int(Lcd_HandleTypeDef * lcd, int number)
 {
- 800108c:	b580      	push	{r7, lr}
- 800108e:	b086      	sub	sp, #24
- 8001090:	af00      	add	r7, sp, #0
- 8001092:	6078      	str	r0, [r7, #4]
- 8001094:	6039      	str	r1, [r7, #0]
+ 80013a8:	b580      	push	{r7, lr}
+ 80013aa:	b086      	sub	sp, #24
+ 80013ac:	af00      	add	r7, sp, #0
+ 80013ae:	6078      	str	r0, [r7, #4]
+ 80013b0:	6039      	str	r1, [r7, #0]
 	char buffer[11];
 	sprintf(buffer, "%d", number);
- 8001096:	f107 030c 	add.w	r3, r7, #12
- 800109a:	683a      	ldr	r2, [r7, #0]
- 800109c:	4906      	ldr	r1, [pc, #24]	; (80010b8 <Lcd_int+0x2c>)
- 800109e:	4618      	mov	r0, r3
- 80010a0:	f002 fc64 	bl	800396c <siprintf>
+ 80013b2:	f107 030c 	add.w	r3, r7, #12
+ 80013b6:	683a      	ldr	r2, [r7, #0]
+ 80013b8:	4906      	ldr	r1, [pc, #24]	; (80013d4 <Lcd_int+0x2c>)
+ 80013ba:	4618      	mov	r0, r3
+ 80013bc:	f002 fad6 	bl	800396c <siprintf>
 
 	Lcd_string(lcd, buffer);
- 80010a4:	f107 030c 	add.w	r3, r7, #12
- 80010a8:	4619      	mov	r1, r3
- 80010aa:	6878      	ldr	r0, [r7, #4]
- 80010ac:	f000 f852 	bl	8001154 <Lcd_string>
+ 80013c0:	f107 030c 	add.w	r3, r7, #12
+ 80013c4:	4619      	mov	r1, r3
+ 80013c6:	6878      	ldr	r0, [r7, #4]
+ 80013c8:	f000 f852 	bl	8001470 <Lcd_string>
 }
- 80010b0:	bf00      	nop
- 80010b2:	3718      	adds	r7, #24
- 80010b4:	46bd      	mov	sp, r7
- 80010b6:	bd80      	pop	{r7, pc}
- 80010b8:	08006c40 	.word	0x08006c40
+ 80013cc:	bf00      	nop
+ 80013ce:	3718      	adds	r7, #24
+ 80013d0:	46bd      	mov	sp, r7
+ 80013d2:	bd80      	pop	{r7, pc}
+ 80013d4:	08006c40 	.word	0x08006c40
 
-080010bc <Lcd_float_lim>:
+080013d8 <Lcd_float_lim>:
 
 /*
  * Write a number on the current position
  */
 void Lcd_float_lim(Lcd_HandleTypeDef * lcd, float number, uint8_t decimal)
 {
- 80010bc:	b5b0      	push	{r4, r5, r7, lr}
- 80010be:	b086      	sub	sp, #24
- 80010c0:	af00      	add	r7, sp, #0
- 80010c2:	60f8      	str	r0, [r7, #12]
- 80010c4:	60b9      	str	r1, [r7, #8]
- 80010c6:	4613      	mov	r3, r2
- 80010c8:	71fb      	strb	r3, [r7, #7]
+ 80013d8:	b5b0      	push	{r4, r5, r7, lr}
+ 80013da:	b086      	sub	sp, #24
+ 80013dc:	af00      	add	r7, sp, #0
+ 80013de:	60f8      	str	r0, [r7, #12]
+ 80013e0:	60b9      	str	r1, [r7, #8]
+ 80013e2:	4613      	mov	r3, r2
+ 80013e4:	71fb      	strb	r3, [r7, #7]
 	int intPart = (int) number;
- 80010ca:	68b8      	ldr	r0, [r7, #8]
- 80010cc:	f7ff ff64 	bl	8000f98 <__aeabi_f2iz>
- 80010d0:	4603      	mov	r3, r0
- 80010d2:	617b      	str	r3, [r7, #20]
+ 80013e6:	68b8      	ldr	r0, [r7, #8]
+ 80013e8:	f7ff fdd6 	bl	8000f98 <__aeabi_f2iz>
+ 80013ec:	4603      	mov	r3, r0
+ 80013ee:	617b      	str	r3, [r7, #20]
 	Lcd_int(lcd, intPart);
- 80010d4:	6979      	ldr	r1, [r7, #20]
- 80010d6:	68f8      	ldr	r0, [r7, #12]
- 80010d8:	f7ff ffd8 	bl	800108c <Lcd_int>
+ 80013f0:	6979      	ldr	r1, [r7, #20]
+ 80013f2:	68f8      	ldr	r0, [r7, #12]
+ 80013f4:	f7ff ffd8 	bl	80013a8 <Lcd_int>
 	Lcd_string(lcd, ".");
- 80010dc:	491b      	ldr	r1, [pc, #108]	; (800114c <Lcd_float_lim+0x90>)
- 80010de:	68f8      	ldr	r0, [r7, #12]
- 80010e0:	f000 f838 	bl	8001154 <Lcd_string>
+ 80013f8:	491b      	ldr	r1, [pc, #108]	; (8001468 <Lcd_float_lim+0x90>)
+ 80013fa:	68f8      	ldr	r0, [r7, #12]
+ 80013fc:	f000 f838 	bl	8001470 <Lcd_string>
 	number = number - (float)intPart;
- 80010e4:	6978      	ldr	r0, [r7, #20]
- 80010e6:	f7ff fe8d 	bl	8000e04 <__aeabi_i2f>
- 80010ea:	4603      	mov	r3, r0
- 80010ec:	4619      	mov	r1, r3
- 80010ee:	68b8      	ldr	r0, [r7, #8]
- 80010f0:	f7ff fdd2 	bl	8000c98 <__aeabi_fsub>
- 80010f4:	4603      	mov	r3, r0
- 80010f6:	60bb      	str	r3, [r7, #8]
+ 8001400:	6978      	ldr	r0, [r7, #20]
+ 8001402:	f7ff fcff 	bl	8000e04 <__aeabi_i2f>
+ 8001406:	4603      	mov	r3, r0
+ 8001408:	4619      	mov	r1, r3
+ 800140a:	68b8      	ldr	r0, [r7, #8]
+ 800140c:	f7ff fc44 	bl	8000c98 <__aeabi_fsub>
+ 8001410:	4603      	mov	r3, r0
+ 8001412:	60bb      	str	r3, [r7, #8]
 	number = number * pow(10,decimal);
- 80010f8:	68b8      	ldr	r0, [r7, #8]
- 80010fa:	f7ff fa49 	bl	8000590 <__aeabi_f2d>
- 80010fe:	4604      	mov	r4, r0
- 8001100:	460d      	mov	r5, r1
- 8001102:	79fb      	ldrb	r3, [r7, #7]
- 8001104:	4618      	mov	r0, r3
- 8001106:	f7ff fa21 	bl	800054c <__aeabi_ui2d>
- 800110a:	4602      	mov	r2, r0
- 800110c:	460b      	mov	r3, r1
- 800110e:	f04f 0000 	mov.w	r0, #0
- 8001112:	490f      	ldr	r1, [pc, #60]	; (8001150 <Lcd_float_lim+0x94>)
- 8001114:	f004 fea4 	bl	8005e60 <pow>
- 8001118:	4602      	mov	r2, r0
- 800111a:	460b      	mov	r3, r1
- 800111c:	4620      	mov	r0, r4
- 800111e:	4629      	mov	r1, r5
- 8001120:	f7ff fa8e 	bl	8000640 <__aeabi_dmul>
- 8001124:	4602      	mov	r2, r0
- 8001126:	460b      	mov	r3, r1
- 8001128:	4610      	mov	r0, r2
- 800112a:	4619      	mov	r1, r3
- 800112c:	f7ff fd60 	bl	8000bf0 <__aeabi_d2f>
- 8001130:	4603      	mov	r3, r0
- 8001132:	60bb      	str	r3, [r7, #8]
+ 8001414:	68b8      	ldr	r0, [r7, #8]
+ 8001416:	f7ff f8bb 	bl	8000590 <__aeabi_f2d>
+ 800141a:	4604      	mov	r4, r0
+ 800141c:	460d      	mov	r5, r1
+ 800141e:	79fb      	ldrb	r3, [r7, #7]
+ 8001420:	4618      	mov	r0, r3
+ 8001422:	f7ff f893 	bl	800054c <__aeabi_ui2d>
+ 8001426:	4602      	mov	r2, r0
+ 8001428:	460b      	mov	r3, r1
+ 800142a:	f04f 0000 	mov.w	r0, #0
+ 800142e:	490f      	ldr	r1, [pc, #60]	; (800146c <Lcd_float_lim+0x94>)
+ 8001430:	f004 fd16 	bl	8005e60 <pow>
+ 8001434:	4602      	mov	r2, r0
+ 8001436:	460b      	mov	r3, r1
+ 8001438:	4620      	mov	r0, r4
+ 800143a:	4629      	mov	r1, r5
+ 800143c:	f7ff f900 	bl	8000640 <__aeabi_dmul>
+ 8001440:	4602      	mov	r2, r0
+ 8001442:	460b      	mov	r3, r1
+ 8001444:	4610      	mov	r0, r2
+ 8001446:	4619      	mov	r1, r3
+ 8001448:	f7ff fbd2 	bl	8000bf0 <__aeabi_d2f>
+ 800144c:	4603      	mov	r3, r0
+ 800144e:	60bb      	str	r3, [r7, #8]
 	Lcd_int(lcd, (int)number);
- 8001134:	68b8      	ldr	r0, [r7, #8]
- 8001136:	f7ff ff2f 	bl	8000f98 <__aeabi_f2iz>
- 800113a:	4603      	mov	r3, r0
- 800113c:	4619      	mov	r1, r3
- 800113e:	68f8      	ldr	r0, [r7, #12]
- 8001140:	f7ff ffa4 	bl	800108c <Lcd_int>
+ 8001450:	68b8      	ldr	r0, [r7, #8]
+ 8001452:	f7ff fda1 	bl	8000f98 <__aeabi_f2iz>
+ 8001456:	4603      	mov	r3, r0
+ 8001458:	4619      	mov	r1, r3
+ 800145a:	68f8      	ldr	r0, [r7, #12]
+ 800145c:	f7ff ffa4 	bl	80013a8 <Lcd_int>
 }
- 8001144:	bf00      	nop
- 8001146:	3718      	adds	r7, #24
- 8001148:	46bd      	mov	sp, r7
- 800114a:	bdb0      	pop	{r4, r5, r7, pc}
- 800114c:	08006c48 	.word	0x08006c48
- 8001150:	40240000 	.word	0x40240000
+ 8001460:	bf00      	nop
+ 8001462:	3718      	adds	r7, #24
+ 8001464:	46bd      	mov	sp, r7
+ 8001466:	bdb0      	pop	{r4, r5, r7, pc}
+ 8001468:	08006c48 	.word	0x08006c48
+ 800146c:	40240000 	.word	0x40240000
 
-08001154 <Lcd_string>:
+08001470 <Lcd_string>:
 
 /**
  * Write a string on the current position
  */
 void Lcd_string(Lcd_HandleTypeDef * lcd, char * string)
 {
- 8001154:	b590      	push	{r4, r7, lr}
- 8001156:	b085      	sub	sp, #20
- 8001158:	af00      	add	r7, sp, #0
- 800115a:	6078      	str	r0, [r7, #4]
- 800115c:	6039      	str	r1, [r7, #0]
+ 8001470:	b590      	push	{r4, r7, lr}
+ 8001472:	b085      	sub	sp, #20
+ 8001474:	af00      	add	r7, sp, #0
+ 8001476:	6078      	str	r0, [r7, #4]
+ 8001478:	6039      	str	r1, [r7, #0]
 	for(uint8_t i = 0; i < strlen(string); i++)
- 800115e:	2300      	movs	r3, #0
- 8001160:	73fb      	strb	r3, [r7, #15]
- 8001162:	e00a      	b.n	800117a <Lcd_string+0x26>
+ 800147a:	2300      	movs	r3, #0
+ 800147c:	73fb      	strb	r3, [r7, #15]
+ 800147e:	e00a      	b.n	8001496 <Lcd_string+0x26>
 	{
 		lcd_write_data(lcd, string[i]);
- 8001164:	7bfb      	ldrb	r3, [r7, #15]
- 8001166:	683a      	ldr	r2, [r7, #0]
- 8001168:	4413      	add	r3, r2
- 800116a:	781b      	ldrb	r3, [r3, #0]
- 800116c:	4619      	mov	r1, r3
- 800116e:	6878      	ldr	r0, [r7, #4]
- 8001170:	f000 f858 	bl	8001224 <lcd_write_data>
+ 8001480:	7bfb      	ldrb	r3, [r7, #15]
+ 8001482:	683a      	ldr	r2, [r7, #0]
+ 8001484:	4413      	add	r3, r2
+ 8001486:	781b      	ldrb	r3, [r3, #0]
+ 8001488:	4619      	mov	r1, r3
+ 800148a:	6878      	ldr	r0, [r7, #4]
+ 800148c:	f000 f858 	bl	8001540 <lcd_write_data>
 	for(uint8_t i = 0; i < strlen(string); i++)
- 8001174:	7bfb      	ldrb	r3, [r7, #15]
- 8001176:	3301      	adds	r3, #1
- 8001178:	73fb      	strb	r3, [r7, #15]
- 800117a:	7bfc      	ldrb	r4, [r7, #15]
- 800117c:	6838      	ldr	r0, [r7, #0]
- 800117e:	f7fe ffe7 	bl	8000150 <strlen>
- 8001182:	4603      	mov	r3, r0
- 8001184:	429c      	cmp	r4, r3
- 8001186:	d3ed      	bcc.n	8001164 <Lcd_string+0x10>
+ 8001490:	7bfb      	ldrb	r3, [r7, #15]
+ 8001492:	3301      	adds	r3, #1
+ 8001494:	73fb      	strb	r3, [r7, #15]
+ 8001496:	7bfc      	ldrb	r4, [r7, #15]
+ 8001498:	6838      	ldr	r0, [r7, #0]
+ 800149a:	f7fe fe59 	bl	8000150 <strlen>
+ 800149e:	4603      	mov	r3, r0
+ 80014a0:	429c      	cmp	r4, r3
+ 80014a2:	d3ed      	bcc.n	8001480 <Lcd_string+0x10>
 	}
 }
- 8001188:	bf00      	nop
- 800118a:	bf00      	nop
- 800118c:	3714      	adds	r7, #20
- 800118e:	46bd      	mov	sp, r7
- 8001190:	bd90      	pop	{r4, r7, pc}
+ 80014a4:	bf00      	nop
+ 80014a6:	bf00      	nop
+ 80014a8:	3714      	adds	r7, #20
+ 80014aa:	46bd      	mov	sp, r7
+ 80014ac:	bd90      	pop	{r4, r7, pc}
 	...
 
-08001194 <Lcd_cursor>:
+080014b0 <Lcd_cursor>:
 
 /**
  * Set the cursor position
  */
 void Lcd_cursor(Lcd_HandleTypeDef * lcd, uint8_t row, uint8_t col)
 {
- 8001194:	b580      	push	{r7, lr}
- 8001196:	b082      	sub	sp, #8
- 8001198:	af00      	add	r7, sp, #0
- 800119a:	6078      	str	r0, [r7, #4]
- 800119c:	460b      	mov	r3, r1
- 800119e:	70fb      	strb	r3, [r7, #3]
- 80011a0:	4613      	mov	r3, r2
- 80011a2:	70bb      	strb	r3, [r7, #2]
+ 80014b0:	b580      	push	{r7, lr}
+ 80014b2:	b082      	sub	sp, #8
+ 80014b4:	af00      	add	r7, sp, #0
+ 80014b6:	6078      	str	r0, [r7, #4]
+ 80014b8:	460b      	mov	r3, r1
+ 80014ba:	70fb      	strb	r3, [r7, #3]
+ 80014bc:	4613      	mov	r3, r2
+ 80014be:	70bb      	strb	r3, [r7, #2]
 	#ifdef LCD20xN
 	lcd_write_command(lcd, SET_DDRAM_ADDR + ROW_20[row] + col);
 	#endif
 
 	#ifdef LCD16xN
 	lcd_write_command(lcd, SET_DDRAM_ADDR + ROW_16[row] + col);
- 80011a4:	78fb      	ldrb	r3, [r7, #3]
- 80011a6:	4a07      	ldr	r2, [pc, #28]	; (80011c4 <Lcd_cursor+0x30>)
- 80011a8:	5cd2      	ldrb	r2, [r2, r3]
- 80011aa:	78bb      	ldrb	r3, [r7, #2]
- 80011ac:	4413      	add	r3, r2
- 80011ae:	b2db      	uxtb	r3, r3
- 80011b0:	3b80      	subs	r3, #128	; 0x80
- 80011b2:	b2db      	uxtb	r3, r3
- 80011b4:	4619      	mov	r1, r3
- 80011b6:	6878      	ldr	r0, [r7, #4]
- 80011b8:	f000 f806 	bl	80011c8 <lcd_write_command>
+ 80014c0:	78fb      	ldrb	r3, [r7, #3]
+ 80014c2:	4a07      	ldr	r2, [pc, #28]	; (80014e0 <Lcd_cursor+0x30>)
+ 80014c4:	5cd2      	ldrb	r2, [r2, r3]
+ 80014c6:	78bb      	ldrb	r3, [r7, #2]
+ 80014c8:	4413      	add	r3, r2
+ 80014ca:	b2db      	uxtb	r3, r3
+ 80014cc:	3b80      	subs	r3, #128	; 0x80
+ 80014ce:	b2db      	uxtb	r3, r3
+ 80014d0:	4619      	mov	r1, r3
+ 80014d2:	6878      	ldr	r0, [r7, #4]
+ 80014d4:	f000 f806 	bl	80014e4 <lcd_write_command>
 	#endif
 }
- 80011bc:	bf00      	nop
- 80011be:	3708      	adds	r7, #8
- 80011c0:	46bd      	mov	sp, r7
- 80011c2:	bd80      	pop	{r7, pc}
- 80011c4:	08006c80 	.word	0x08006c80
+ 80014d8:	bf00      	nop
+ 80014da:	3708      	adds	r7, #8
+ 80014dc:	46bd      	mov	sp, r7
+ 80014de:	bd80      	pop	{r7, pc}
+ 80014e0:	08006c80 	.word	0x08006c80
 
-080011c8 <lcd_write_command>:
+080014e4 <lcd_write_command>:
 
 /**
  * Write a byte to the command register
  */
 void lcd_write_command(Lcd_HandleTypeDef * lcd, uint8_t command)
 {
- 80011c8:	b580      	push	{r7, lr}
- 80011ca:	b082      	sub	sp, #8
- 80011cc:	af00      	add	r7, sp, #0
- 80011ce:	6078      	str	r0, [r7, #4]
- 80011d0:	460b      	mov	r3, r1
- 80011d2:	70fb      	strb	r3, [r7, #3]
+ 80014e4:	b580      	push	{r7, lr}
+ 80014e6:	b082      	sub	sp, #8
+ 80014e8:	af00      	add	r7, sp, #0
+ 80014ea:	6078      	str	r0, [r7, #4]
+ 80014ec:	460b      	mov	r3, r1
+ 80014ee:	70fb      	strb	r3, [r7, #3]
 	HAL_GPIO_WritePin(lcd->rs_port, lcd->rs_pin, LCD_COMMAND_REG);		// Write to command register
- 80011d4:	687b      	ldr	r3, [r7, #4]
- 80011d6:	6898      	ldr	r0, [r3, #8]
- 80011d8:	687b      	ldr	r3, [r7, #4]
- 80011da:	899b      	ldrh	r3, [r3, #12]
- 80011dc:	2200      	movs	r2, #0
- 80011de:	4619      	mov	r1, r3
- 80011e0:	f001 f86b 	bl	80022ba <HAL_GPIO_WritePin>
+ 80014f0:	687b      	ldr	r3, [r7, #4]
+ 80014f2:	6898      	ldr	r0, [r3, #8]
+ 80014f4:	687b      	ldr	r3, [r7, #4]
+ 80014f6:	899b      	ldrh	r3, [r3, #12]
+ 80014f8:	2200      	movs	r2, #0
+ 80014fa:	4619      	mov	r1, r3
+ 80014fc:	f000 fedd 	bl	80022ba <HAL_GPIO_WritePin>
 
 	if(lcd->mode == LCD_4_BIT_MODE)
- 80011e4:	687b      	ldr	r3, [r7, #4]
- 80011e6:	7d9b      	ldrb	r3, [r3, #22]
- 80011e8:	2b00      	cmp	r3, #0
- 80011ea:	d111      	bne.n	8001210 <lcd_write_command+0x48>
+ 8001500:	687b      	ldr	r3, [r7, #4]
+ 8001502:	7d9b      	ldrb	r3, [r3, #22]
+ 8001504:	2b00      	cmp	r3, #0
+ 8001506:	d111      	bne.n	800152c <lcd_write_command+0x48>
 	{
 		lcd_write(lcd, (command >> 4), LCD_NIB);
- 80011ec:	78fb      	ldrb	r3, [r7, #3]
- 80011ee:	091b      	lsrs	r3, r3, #4
- 80011f0:	b2db      	uxtb	r3, r3
- 80011f2:	2204      	movs	r2, #4
- 80011f4:	4619      	mov	r1, r3
- 80011f6:	6878      	ldr	r0, [r7, #4]
- 80011f8:	f000 f842 	bl	8001280 <lcd_write>
+ 8001508:	78fb      	ldrb	r3, [r7, #3]
+ 800150a:	091b      	lsrs	r3, r3, #4
+ 800150c:	b2db      	uxtb	r3, r3
+ 800150e:	2204      	movs	r2, #4
+ 8001510:	4619      	mov	r1, r3
+ 8001512:	6878      	ldr	r0, [r7, #4]
+ 8001514:	f000 f842 	bl	800159c <lcd_write>
 		lcd_write(lcd, command & 0x0F, LCD_NIB);
- 80011fc:	78fb      	ldrb	r3, [r7, #3]
- 80011fe:	f003 030f 	and.w	r3, r3, #15
- 8001202:	b2db      	uxtb	r3, r3
- 8001204:	2204      	movs	r2, #4
- 8001206:	4619      	mov	r1, r3
- 8001208:	6878      	ldr	r0, [r7, #4]
- 800120a:	f000 f839 	bl	8001280 <lcd_write>
+ 8001518:	78fb      	ldrb	r3, [r7, #3]
+ 800151a:	f003 030f 	and.w	r3, r3, #15
+ 800151e:	b2db      	uxtb	r3, r3
+ 8001520:	2204      	movs	r2, #4
+ 8001522:	4619      	mov	r1, r3
+ 8001524:	6878      	ldr	r0, [r7, #4]
+ 8001526:	f000 f839 	bl	800159c <lcd_write>
 	else
 	{
 		lcd_write(lcd, command, LCD_BYTE);
 	}
 
 }
- 800120e:	e005      	b.n	800121c <lcd_write_command+0x54>
+ 800152a:	e005      	b.n	8001538 <lcd_write_command+0x54>
 		lcd_write(lcd, command, LCD_BYTE);
- 8001210:	78fb      	ldrb	r3, [r7, #3]
- 8001212:	2208      	movs	r2, #8
- 8001214:	4619      	mov	r1, r3
- 8001216:	6878      	ldr	r0, [r7, #4]
- 8001218:	f000 f832 	bl	8001280 <lcd_write>
+ 800152c:	78fb      	ldrb	r3, [r7, #3]
+ 800152e:	2208      	movs	r2, #8
+ 8001530:	4619      	mov	r1, r3
+ 8001532:	6878      	ldr	r0, [r7, #4]
+ 8001534:	f000 f832 	bl	800159c <lcd_write>
 }
- 800121c:	bf00      	nop
- 800121e:	3708      	adds	r7, #8
- 8001220:	46bd      	mov	sp, r7
- 8001222:	bd80      	pop	{r7, pc}
+ 8001538:	bf00      	nop
+ 800153a:	3708      	adds	r7, #8
+ 800153c:	46bd      	mov	sp, r7
+ 800153e:	bd80      	pop	{r7, pc}
 
-08001224 <lcd_write_data>:
+08001540 <lcd_write_data>:
 
 /**
  * Write a byte to the data register
  */
 void lcd_write_data(Lcd_HandleTypeDef * lcd, uint8_t data)
 {
- 8001224:	b580      	push	{r7, lr}
- 8001226:	b082      	sub	sp, #8
- 8001228:	af00      	add	r7, sp, #0
- 800122a:	6078      	str	r0, [r7, #4]
- 800122c:	460b      	mov	r3, r1
- 800122e:	70fb      	strb	r3, [r7, #3]
+ 8001540:	b580      	push	{r7, lr}
+ 8001542:	b082      	sub	sp, #8
+ 8001544:	af00      	add	r7, sp, #0
+ 8001546:	6078      	str	r0, [r7, #4]
+ 8001548:	460b      	mov	r3, r1
+ 800154a:	70fb      	strb	r3, [r7, #3]
 	HAL_GPIO_WritePin(lcd->rs_port, lcd->rs_pin, LCD_DATA_REG);			// Write to data register
- 8001230:	687b      	ldr	r3, [r7, #4]
- 8001232:	6898      	ldr	r0, [r3, #8]
- 8001234:	687b      	ldr	r3, [r7, #4]
- 8001236:	899b      	ldrh	r3, [r3, #12]
- 8001238:	2201      	movs	r2, #1
- 800123a:	4619      	mov	r1, r3
- 800123c:	f001 f83d 	bl	80022ba <HAL_GPIO_WritePin>
+ 800154c:	687b      	ldr	r3, [r7, #4]
+ 800154e:	6898      	ldr	r0, [r3, #8]
+ 8001550:	687b      	ldr	r3, [r7, #4]
+ 8001552:	899b      	ldrh	r3, [r3, #12]
+ 8001554:	2201      	movs	r2, #1
+ 8001556:	4619      	mov	r1, r3
+ 8001558:	f000 feaf 	bl	80022ba <HAL_GPIO_WritePin>
 
 	if(lcd->mode == LCD_4_BIT_MODE)
- 8001240:	687b      	ldr	r3, [r7, #4]
- 8001242:	7d9b      	ldrb	r3, [r3, #22]
- 8001244:	2b00      	cmp	r3, #0
- 8001246:	d111      	bne.n	800126c <lcd_write_data+0x48>
+ 800155c:	687b      	ldr	r3, [r7, #4]
+ 800155e:	7d9b      	ldrb	r3, [r3, #22]
+ 8001560:	2b00      	cmp	r3, #0
+ 8001562:	d111      	bne.n	8001588 <lcd_write_data+0x48>
 	{
 		lcd_write(lcd, data >> 4, LCD_NIB);
- 8001248:	78fb      	ldrb	r3, [r7, #3]
- 800124a:	091b      	lsrs	r3, r3, #4
- 800124c:	b2db      	uxtb	r3, r3
- 800124e:	2204      	movs	r2, #4
- 8001250:	4619      	mov	r1, r3
- 8001252:	6878      	ldr	r0, [r7, #4]
- 8001254:	f000 f814 	bl	8001280 <lcd_write>
+ 8001564:	78fb      	ldrb	r3, [r7, #3]
+ 8001566:	091b      	lsrs	r3, r3, #4
+ 8001568:	b2db      	uxtb	r3, r3
+ 800156a:	2204      	movs	r2, #4
+ 800156c:	4619      	mov	r1, r3
+ 800156e:	6878      	ldr	r0, [r7, #4]
+ 8001570:	f000 f814 	bl	800159c <lcd_write>
 		lcd_write(lcd, data & 0x0F, LCD_NIB);
- 8001258:	78fb      	ldrb	r3, [r7, #3]
- 800125a:	f003 030f 	and.w	r3, r3, #15
- 800125e:	b2db      	uxtb	r3, r3
- 8001260:	2204      	movs	r2, #4
- 8001262:	4619      	mov	r1, r3
- 8001264:	6878      	ldr	r0, [r7, #4]
- 8001266:	f000 f80b 	bl	8001280 <lcd_write>
+ 8001574:	78fb      	ldrb	r3, [r7, #3]
+ 8001576:	f003 030f 	and.w	r3, r3, #15
+ 800157a:	b2db      	uxtb	r3, r3
+ 800157c:	2204      	movs	r2, #4
+ 800157e:	4619      	mov	r1, r3
+ 8001580:	6878      	ldr	r0, [r7, #4]
+ 8001582:	f000 f80b 	bl	800159c <lcd_write>
 	else
 	{
 		lcd_write(lcd, data, LCD_BYTE);
 	}
 
 }
- 800126a:	e005      	b.n	8001278 <lcd_write_data+0x54>
+ 8001586:	e005      	b.n	8001594 <lcd_write_data+0x54>
 		lcd_write(lcd, data, LCD_BYTE);
- 800126c:	78fb      	ldrb	r3, [r7, #3]
- 800126e:	2208      	movs	r2, #8
- 8001270:	4619      	mov	r1, r3
- 8001272:	6878      	ldr	r0, [r7, #4]
- 8001274:	f000 f804 	bl	8001280 <lcd_write>
+ 8001588:	78fb      	ldrb	r3, [r7, #3]
+ 800158a:	2208      	movs	r2, #8
+ 800158c:	4619      	mov	r1, r3
+ 800158e:	6878      	ldr	r0, [r7, #4]
+ 8001590:	f000 f804 	bl	800159c <lcd_write>
 }
- 8001278:	bf00      	nop
- 800127a:	3708      	adds	r7, #8
- 800127c:	46bd      	mov	sp, r7
- 800127e:	bd80      	pop	{r7, pc}
+ 8001594:	bf00      	nop
+ 8001596:	3708      	adds	r7, #8
+ 8001598:	46bd      	mov	sp, r7
+ 800159a:	bd80      	pop	{r7, pc}
 
-08001280 <lcd_write>:
+0800159c <lcd_write>:
 
 /**
  * Set len bits on the bus and toggle the enable line
  */
 void lcd_write(Lcd_HandleTypeDef * lcd, uint8_t data, uint8_t len)
 {
- 8001280:	b580      	push	{r7, lr}
- 8001282:	b084      	sub	sp, #16
- 8001284:	af00      	add	r7, sp, #0
- 8001286:	6078      	str	r0, [r7, #4]
- 8001288:	460b      	mov	r3, r1
- 800128a:	70fb      	strb	r3, [r7, #3]
- 800128c:	4613      	mov	r3, r2
- 800128e:	70bb      	strb	r3, [r7, #2]
+ 800159c:	b580      	push	{r7, lr}
+ 800159e:	b084      	sub	sp, #16
+ 80015a0:	af00      	add	r7, sp, #0
+ 80015a2:	6078      	str	r0, [r7, #4]
+ 80015a4:	460b      	mov	r3, r1
+ 80015a6:	70fb      	strb	r3, [r7, #3]
+ 80015a8:	4613      	mov	r3, r2
+ 80015aa:	70bb      	strb	r3, [r7, #2]
 	for(uint8_t i = 0; i < len; i++)
- 8001290:	2300      	movs	r3, #0
- 8001292:	73fb      	strb	r3, [r7, #15]
- 8001294:	e019      	b.n	80012ca <lcd_write+0x4a>
+ 80015ac:	2300      	movs	r3, #0
+ 80015ae:	73fb      	strb	r3, [r7, #15]
+ 80015b0:	e019      	b.n	80015e6 <lcd_write+0x4a>
 	{
 		HAL_GPIO_WritePin(lcd->data_port[i], lcd->data_pin[i], (data >> i) & 0x01);
- 8001296:	687b      	ldr	r3, [r7, #4]
- 8001298:	681a      	ldr	r2, [r3, #0]
- 800129a:	7bfb      	ldrb	r3, [r7, #15]
- 800129c:	009b      	lsls	r3, r3, #2
- 800129e:	4413      	add	r3, r2
- 80012a0:	6818      	ldr	r0, [r3, #0]
- 80012a2:	687b      	ldr	r3, [r7, #4]
- 80012a4:	685a      	ldr	r2, [r3, #4]
- 80012a6:	7bfb      	ldrb	r3, [r7, #15]
- 80012a8:	005b      	lsls	r3, r3, #1
- 80012aa:	4413      	add	r3, r2
- 80012ac:	8819      	ldrh	r1, [r3, #0]
- 80012ae:	78fa      	ldrb	r2, [r7, #3]
- 80012b0:	7bfb      	ldrb	r3, [r7, #15]
- 80012b2:	fa42 f303 	asr.w	r3, r2, r3
- 80012b6:	b2db      	uxtb	r3, r3
- 80012b8:	f003 0301 	and.w	r3, r3, #1
- 80012bc:	b2db      	uxtb	r3, r3
- 80012be:	461a      	mov	r2, r3
- 80012c0:	f000 fffb 	bl	80022ba <HAL_GPIO_WritePin>
+ 80015b2:	687b      	ldr	r3, [r7, #4]
+ 80015b4:	681a      	ldr	r2, [r3, #0]
+ 80015b6:	7bfb      	ldrb	r3, [r7, #15]
+ 80015b8:	009b      	lsls	r3, r3, #2
+ 80015ba:	4413      	add	r3, r2
+ 80015bc:	6818      	ldr	r0, [r3, #0]
+ 80015be:	687b      	ldr	r3, [r7, #4]
+ 80015c0:	685a      	ldr	r2, [r3, #4]
+ 80015c2:	7bfb      	ldrb	r3, [r7, #15]
+ 80015c4:	005b      	lsls	r3, r3, #1
+ 80015c6:	4413      	add	r3, r2
+ 80015c8:	8819      	ldrh	r1, [r3, #0]
+ 80015ca:	78fa      	ldrb	r2, [r7, #3]
+ 80015cc:	7bfb      	ldrb	r3, [r7, #15]
+ 80015ce:	fa42 f303 	asr.w	r3, r2, r3
+ 80015d2:	b2db      	uxtb	r3, r3
+ 80015d4:	f003 0301 	and.w	r3, r3, #1
+ 80015d8:	b2db      	uxtb	r3, r3
+ 80015da:	461a      	mov	r2, r3
+ 80015dc:	f000 fe6d 	bl	80022ba <HAL_GPIO_WritePin>
 	for(uint8_t i = 0; i < len; i++)
- 80012c4:	7bfb      	ldrb	r3, [r7, #15]
- 80012c6:	3301      	adds	r3, #1
- 80012c8:	73fb      	strb	r3, [r7, #15]
- 80012ca:	7bfa      	ldrb	r2, [r7, #15]
- 80012cc:	78bb      	ldrb	r3, [r7, #2]
- 80012ce:	429a      	cmp	r2, r3
- 80012d0:	d3e1      	bcc.n	8001296 <lcd_write+0x16>
+ 80015e0:	7bfb      	ldrb	r3, [r7, #15]
+ 80015e2:	3301      	adds	r3, #1
+ 80015e4:	73fb      	strb	r3, [r7, #15]
+ 80015e6:	7bfa      	ldrb	r2, [r7, #15]
+ 80015e8:	78bb      	ldrb	r3, [r7, #2]
+ 80015ea:	429a      	cmp	r2, r3
+ 80015ec:	d3e1      	bcc.n	80015b2 <lcd_write+0x16>
 	}
 
 	HAL_GPIO_WritePin(lcd->en_port, lcd->en_pin, 1);
- 80012d2:	687b      	ldr	r3, [r7, #4]
- 80012d4:	6918      	ldr	r0, [r3, #16]
- 80012d6:	687b      	ldr	r3, [r7, #4]
- 80012d8:	8a9b      	ldrh	r3, [r3, #20]
- 80012da:	2201      	movs	r2, #1
- 80012dc:	4619      	mov	r1, r3
- 80012de:	f000 ffec 	bl	80022ba <HAL_GPIO_WritePin>
+ 80015ee:	687b      	ldr	r3, [r7, #4]
+ 80015f0:	6918      	ldr	r0, [r3, #16]
+ 80015f2:	687b      	ldr	r3, [r7, #4]
+ 80015f4:	8a9b      	ldrh	r3, [r3, #20]
+ 80015f6:	2201      	movs	r2, #1
+ 80015f8:	4619      	mov	r1, r3
+ 80015fa:	f000 fe5e 	bl	80022ba <HAL_GPIO_WritePin>
 	DELAY(1);
- 80012e2:	2001      	movs	r0, #1
- 80012e4:	f000 fd46 	bl	8001d74 <HAL_Delay>
+ 80015fe:	2001      	movs	r0, #1
+ 8001600:	f000 fbb8 	bl	8001d74 <HAL_Delay>
 	HAL_GPIO_WritePin(lcd->en_port, lcd->en_pin, 0); 		// Data receive on falling edge
- 80012e8:	687b      	ldr	r3, [r7, #4]
- 80012ea:	6918      	ldr	r0, [r3, #16]
- 80012ec:	687b      	ldr	r3, [r7, #4]
- 80012ee:	8a9b      	ldrh	r3, [r3, #20]
- 80012f0:	2200      	movs	r2, #0
- 80012f2:	4619      	mov	r1, r3
- 80012f4:	f000 ffe1 	bl	80022ba <HAL_GPIO_WritePin>
+ 8001604:	687b      	ldr	r3, [r7, #4]
+ 8001606:	6918      	ldr	r0, [r3, #16]
+ 8001608:	687b      	ldr	r3, [r7, #4]
+ 800160a:	8a9b      	ldrh	r3, [r3, #20]
+ 800160c:	2200      	movs	r2, #0
+ 800160e:	4619      	mov	r1, r3
+ 8001610:	f000 fe53 	bl	80022ba <HAL_GPIO_WritePin>
 }
- 80012f8:	bf00      	nop
- 80012fa:	3710      	adds	r7, #16
- 80012fc:	46bd      	mov	sp, r7
- 80012fe:	bd80      	pop	{r7, pc}
-
-08001300 <delay_us>:
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-void delay_us (uint16_t us)
-{
- 8001300:	b480      	push	{r7}
- 8001302:	b083      	sub	sp, #12
- 8001304:	af00      	add	r7, sp, #0
- 8001306:	4603      	mov	r3, r0
- 8001308:	80fb      	strh	r3, [r7, #6]
-	__HAL_TIM_SET_COUNTER(&htim1,0);  // set the counter value a 0
- 800130a:	4b08      	ldr	r3, [pc, #32]	; (800132c <delay_us+0x2c>)
- 800130c:	681b      	ldr	r3, [r3, #0]
- 800130e:	2200      	movs	r2, #0
- 8001310:	625a      	str	r2, [r3, #36]	; 0x24
-	while (__HAL_TIM_GET_COUNTER(&htim1) < us);  // wait for the counter to reach the us input in the parameter
- 8001312:	bf00      	nop
- 8001314:	4b05      	ldr	r3, [pc, #20]	; (800132c <delay_us+0x2c>)
- 8001316:	681b      	ldr	r3, [r3, #0]
- 8001318:	6a5a      	ldr	r2, [r3, #36]	; 0x24
- 800131a:	88fb      	ldrh	r3, [r7, #6]
- 800131c:	429a      	cmp	r2, r3
- 800131e:	d3f9      	bcc.n	8001314 <delay_us+0x14>
-}
- 8001320:	bf00      	nop
- 8001322:	bf00      	nop
- 8001324:	370c      	adds	r7, #12
- 8001326:	46bd      	mov	sp, r7
- 8001328:	bc80      	pop	{r7}
- 800132a:	4770      	bx	lr
- 800132c:	200001f8 	.word	0x200001f8
-
-08001330 <Set_Pin_Output>:
-
-void Set_Pin_Output(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
-{
- 8001330:	b580      	push	{r7, lr}
- 8001332:	b086      	sub	sp, #24
- 8001334:	af00      	add	r7, sp, #0
- 8001336:	6078      	str	r0, [r7, #4]
- 8001338:	460b      	mov	r3, r1
- 800133a:	807b      	strh	r3, [r7, #2]
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
- 800133c:	f107 0308 	add.w	r3, r7, #8
- 8001340:	2200      	movs	r2, #0
- 8001342:	601a      	str	r2, [r3, #0]
- 8001344:	605a      	str	r2, [r3, #4]
- 8001346:	609a      	str	r2, [r3, #8]
- 8001348:	60da      	str	r2, [r3, #12]
-	GPIO_InitStruct.Pin = GPIO_Pin;
- 800134a:	887b      	ldrh	r3, [r7, #2]
- 800134c:	60bb      	str	r3, [r7, #8]
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
- 800134e:	2301      	movs	r3, #1
- 8001350:	60fb      	str	r3, [r7, #12]
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
- 8001352:	2302      	movs	r3, #2
- 8001354:	617b      	str	r3, [r7, #20]
-	HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
- 8001356:	f107 0308 	add.w	r3, r7, #8
- 800135a:	4619      	mov	r1, r3
- 800135c:	6878      	ldr	r0, [r7, #4]
- 800135e:	f000 fe11 	bl	8001f84 <HAL_GPIO_Init>
-}
- 8001362:	bf00      	nop
- 8001364:	3718      	adds	r7, #24
- 8001366:	46bd      	mov	sp, r7
- 8001368:	bd80      	pop	{r7, pc}
-
-0800136a <Set_Pin_Input>:
-
-void Set_Pin_Input(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
-{
- 800136a:	b580      	push	{r7, lr}
- 800136c:	b086      	sub	sp, #24
- 800136e:	af00      	add	r7, sp, #0
- 8001370:	6078      	str	r0, [r7, #4]
- 8001372:	460b      	mov	r3, r1
- 8001374:	807b      	strh	r3, [r7, #2]
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
- 8001376:	f107 0308 	add.w	r3, r7, #8
- 800137a:	2200      	movs	r2, #0
- 800137c:	601a      	str	r2, [r3, #0]
- 800137e:	605a      	str	r2, [r3, #4]
- 8001380:	609a      	str	r2, [r3, #8]
- 8001382:	60da      	str	r2, [r3, #12]
-	GPIO_InitStruct.Pin = GPIO_Pin;
- 8001384:	887b      	ldrh	r3, [r7, #2]
- 8001386:	60bb      	str	r3, [r7, #8]
-	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
- 8001388:	2300      	movs	r3, #0
- 800138a:	60fb      	str	r3, [r7, #12]
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
- 800138c:	2300      	movs	r3, #0
- 800138e:	613b      	str	r3, [r7, #16]
-	HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
- 8001390:	f107 0308 	add.w	r3, r7, #8
- 8001394:	4619      	mov	r1, r3
- 8001396:	6878      	ldr	r0, [r7, #4]
- 8001398:	f000 fdf4 	bl	8001f84 <HAL_GPIO_Init>
-}
- 800139c:	bf00      	nop
- 800139e:	3718      	adds	r7, #24
- 80013a0:	46bd      	mov	sp, r7
- 80013a2:	bd80      	pop	{r7, pc}
-
-080013a4 <DS18B20_Start>:
-
-uint8_t DS18B20_Start (void)
-{
- 80013a4:	b580      	push	{r7, lr}
- 80013a6:	b082      	sub	sp, #8
- 80013a8:	af00      	add	r7, sp, #0
-	uint8_t Response = 0;
- 80013aa:	2300      	movs	r3, #0
- 80013ac:	71fb      	strb	r3, [r7, #7]
-	Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);   // set the pin as output
- 80013ae:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80013b2:	4815      	ldr	r0, [pc, #84]	; (8001408 <DS18B20_Start+0x64>)
- 80013b4:	f7ff ffbc 	bl	8001330 <Set_Pin_Output>
-	HAL_GPIO_WritePin (DS18B20_PORT, DS18B20_PIN, 0);  // pull the pin low
- 80013b8:	2200      	movs	r2, #0
- 80013ba:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80013be:	4812      	ldr	r0, [pc, #72]	; (8001408 <DS18B20_Start+0x64>)
- 80013c0:	f000 ff7b 	bl	80022ba <HAL_GPIO_WritePin>
-	delay_us (480);   // delay according to datasheet
- 80013c4:	f44f 70f0 	mov.w	r0, #480	; 0x1e0
- 80013c8:	f7ff ff9a 	bl	8001300 <delay_us>
-
-	Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);    // set the pin as input
- 80013cc:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80013d0:	480d      	ldr	r0, [pc, #52]	; (8001408 <DS18B20_Start+0x64>)
- 80013d2:	f7ff ffca 	bl	800136a <Set_Pin_Input>
-	delay_us (80);    // delay according to datasheet
- 80013d6:	2050      	movs	r0, #80	; 0x50
- 80013d8:	f7ff ff92 	bl	8001300 <delay_us>
-
-	if (!(HAL_GPIO_ReadPin (DS18B20_PORT, DS18B20_PIN))) Response = 1;    // if the pin is low i.e the presence pulse is detected
- 80013dc:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80013e0:	4809      	ldr	r0, [pc, #36]	; (8001408 <DS18B20_Start+0x64>)
- 80013e2:	f000 ff53 	bl	800228c <HAL_GPIO_ReadPin>
- 80013e6:	4603      	mov	r3, r0
- 80013e8:	2b00      	cmp	r3, #0
- 80013ea:	d102      	bne.n	80013f2 <DS18B20_Start+0x4e>
- 80013ec:	2301      	movs	r3, #1
- 80013ee:	71fb      	strb	r3, [r7, #7]
- 80013f0:	e001      	b.n	80013f6 <DS18B20_Start+0x52>
-	else Response = -1;
- 80013f2:	23ff      	movs	r3, #255	; 0xff
- 80013f4:	71fb      	strb	r3, [r7, #7]
-
-	delay_us (400); // 480 us delay totally.
- 80013f6:	f44f 70c8 	mov.w	r0, #400	; 0x190
- 80013fa:	f7ff ff81 	bl	8001300 <delay_us>
-
-	return Response;
- 80013fe:	79fb      	ldrb	r3, [r7, #7]
-}
- 8001400:	4618      	mov	r0, r3
- 8001402:	3708      	adds	r7, #8
- 8001404:	46bd      	mov	sp, r7
- 8001406:	bd80      	pop	{r7, pc}
- 8001408:	40010c00 	.word	0x40010c00
-
-0800140c <DS18B20_Write>:
-
-void DS18B20_Write (uint8_t data)
-{
- 800140c:	b580      	push	{r7, lr}
- 800140e:	b084      	sub	sp, #16
- 8001410:	af00      	add	r7, sp, #0
- 8001412:	4603      	mov	r3, r0
- 8001414:	71fb      	strb	r3, [r7, #7]
-	Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);  // set as output
- 8001416:	f44f 7100 	mov.w	r1, #512	; 0x200
- 800141a:	4821      	ldr	r0, [pc, #132]	; (80014a0 <DS18B20_Write+0x94>)
- 800141c:	f7ff ff88 	bl	8001330 <Set_Pin_Output>
-
-	for (int i=0; i<8; i++)
- 8001420:	2300      	movs	r3, #0
- 8001422:	60fb      	str	r3, [r7, #12]
- 8001424:	e034      	b.n	8001490 <DS18B20_Write+0x84>
-	{
-
-		if ((data & (1<<i))!=0)  // if the bit is high
- 8001426:	79fa      	ldrb	r2, [r7, #7]
- 8001428:	68fb      	ldr	r3, [r7, #12]
- 800142a:	fa42 f303 	asr.w	r3, r2, r3
- 800142e:	f003 0301 	and.w	r3, r3, #1
- 8001432:	2b00      	cmp	r3, #0
- 8001434:	d016      	beq.n	8001464 <DS18B20_Write+0x58>
-		{
-			// write 1
-
-			Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);  // set as output
- 8001436:	f44f 7100 	mov.w	r1, #512	; 0x200
- 800143a:	4819      	ldr	r0, [pc, #100]	; (80014a0 <DS18B20_Write+0x94>)
- 800143c:	f7ff ff78 	bl	8001330 <Set_Pin_Output>
-			HAL_GPIO_WritePin (DS18B20_PORT, DS18B20_PIN, 0);  // pull the pin LOW
- 8001440:	2200      	movs	r2, #0
- 8001442:	f44f 7100 	mov.w	r1, #512	; 0x200
- 8001446:	4816      	ldr	r0, [pc, #88]	; (80014a0 <DS18B20_Write+0x94>)
- 8001448:	f000 ff37 	bl	80022ba <HAL_GPIO_WritePin>
-			delay_us (1);  // wait for 1 us
- 800144c:	2001      	movs	r0, #1
- 800144e:	f7ff ff57 	bl	8001300 <delay_us>
-
-			Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);  // set as input
- 8001452:	f44f 7100 	mov.w	r1, #512	; 0x200
- 8001456:	4812      	ldr	r0, [pc, #72]	; (80014a0 <DS18B20_Write+0x94>)
- 8001458:	f7ff ff87 	bl	800136a <Set_Pin_Input>
-			delay_us (50);  // wait for 60 us
- 800145c:	2032      	movs	r0, #50	; 0x32
- 800145e:	f7ff ff4f 	bl	8001300 <delay_us>
- 8001462:	e012      	b.n	800148a <DS18B20_Write+0x7e>
-
-		else  // if the bit is low
-		{
-			// write 0
-
-			Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);
- 8001464:	f44f 7100 	mov.w	r1, #512	; 0x200
- 8001468:	480d      	ldr	r0, [pc, #52]	; (80014a0 <DS18B20_Write+0x94>)
- 800146a:	f7ff ff61 	bl	8001330 <Set_Pin_Output>
-			HAL_GPIO_WritePin (DS18B20_PORT, DS18B20_PIN, 0);  // pull the pin LOW
- 800146e:	2200      	movs	r2, #0
- 8001470:	f44f 7100 	mov.w	r1, #512	; 0x200
- 8001474:	480a      	ldr	r0, [pc, #40]	; (80014a0 <DS18B20_Write+0x94>)
- 8001476:	f000 ff20 	bl	80022ba <HAL_GPIO_WritePin>
-			delay_us (50);  // wait for 60 us
- 800147a:	2032      	movs	r0, #50	; 0x32
- 800147c:	f7ff ff40 	bl	8001300 <delay_us>
-
-			Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);
- 8001480:	f44f 7100 	mov.w	r1, #512	; 0x200
- 8001484:	4806      	ldr	r0, [pc, #24]	; (80014a0 <DS18B20_Write+0x94>)
- 8001486:	f7ff ff70 	bl	800136a <Set_Pin_Input>
-	for (int i=0; i<8; i++)
- 800148a:	68fb      	ldr	r3, [r7, #12]
- 800148c:	3301      	adds	r3, #1
- 800148e:	60fb      	str	r3, [r7, #12]
- 8001490:	68fb      	ldr	r3, [r7, #12]
- 8001492:	2b07      	cmp	r3, #7
- 8001494:	ddc7      	ble.n	8001426 <DS18B20_Write+0x1a>
-		}
-	}
-}
- 8001496:	bf00      	nop
- 8001498:	bf00      	nop
- 800149a:	3710      	adds	r7, #16
- 800149c:	46bd      	mov	sp, r7
- 800149e:	bd80      	pop	{r7, pc}
- 80014a0:	40010c00 	.word	0x40010c00
-
-080014a4 <DS18B20_Read>:
-
-uint8_t DS18B20_Read(void)
-{
- 80014a4:	b580      	push	{r7, lr}
- 80014a6:	b082      	sub	sp, #8
- 80014a8:	af00      	add	r7, sp, #0
-	uint8_t value=0;
- 80014aa:	2300      	movs	r3, #0
- 80014ac:	71fb      	strb	r3, [r7, #7]
-	Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);  // set as input
- 80014ae:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80014b2:	481c      	ldr	r0, [pc, #112]	; (8001524 <DS18B20_Read+0x80>)
- 80014b4:	f7ff ff59 	bl	800136a <Set_Pin_Input>
-
-	for (int i=0;i<8;i++)
- 80014b8:	2300      	movs	r3, #0
- 80014ba:	603b      	str	r3, [r7, #0]
- 80014bc:	e02a      	b.n	8001514 <DS18B20_Read+0x70>
-	{
-		Set_Pin_Output(DS18B20_PORT, DS18B20_PIN);  // set as output
- 80014be:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80014c2:	4818      	ldr	r0, [pc, #96]	; (8001524 <DS18B20_Read+0x80>)
- 80014c4:	f7ff ff34 	bl	8001330 <Set_Pin_Output>
-
-		HAL_GPIO_WritePin (GPIOB, GPIO_PIN_9, 0);  // pull the data pin LOW
- 80014c8:	2200      	movs	r2, #0
- 80014ca:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80014ce:	4815      	ldr	r0, [pc, #84]	; (8001524 <DS18B20_Read+0x80>)
- 80014d0:	f000 fef3 	bl	80022ba <HAL_GPIO_WritePin>
-		delay_us (2);  // wait for 2 us
- 80014d4:	2002      	movs	r0, #2
- 80014d6:	f7ff ff13 	bl	8001300 <delay_us>
-
-		Set_Pin_Input(DS18B20_PORT, DS18B20_PIN);  // set as input
- 80014da:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80014de:	4811      	ldr	r0, [pc, #68]	; (8001524 <DS18B20_Read+0x80>)
- 80014e0:	f7ff ff43 	bl	800136a <Set_Pin_Input>
-		if (HAL_GPIO_ReadPin (GPIOB, GPIO_PIN_9))  // if the pin is HIGH
- 80014e4:	f44f 7100 	mov.w	r1, #512	; 0x200
- 80014e8:	480e      	ldr	r0, [pc, #56]	; (8001524 <DS18B20_Read+0x80>)
- 80014ea:	f000 fecf 	bl	800228c <HAL_GPIO_ReadPin>
- 80014ee:	4603      	mov	r3, r0
- 80014f0:	2b00      	cmp	r3, #0
- 80014f2:	d009      	beq.n	8001508 <DS18B20_Read+0x64>
-		{
-			value |= 1<<i;  // read = 1
- 80014f4:	2201      	movs	r2, #1
- 80014f6:	683b      	ldr	r3, [r7, #0]
- 80014f8:	fa02 f303 	lsl.w	r3, r2, r3
- 80014fc:	b25a      	sxtb	r2, r3
- 80014fe:	f997 3007 	ldrsb.w	r3, [r7, #7]
- 8001502:	4313      	orrs	r3, r2
- 8001504:	b25b      	sxtb	r3, r3
- 8001506:	71fb      	strb	r3, [r7, #7]
-		}
-		delay_us (60);  // wait for 60 us
- 8001508:	203c      	movs	r0, #60	; 0x3c
- 800150a:	f7ff fef9 	bl	8001300 <delay_us>
-	for (int i=0;i<8;i++)
- 800150e:	683b      	ldr	r3, [r7, #0]
- 8001510:	3301      	adds	r3, #1
- 8001512:	603b      	str	r3, [r7, #0]
- 8001514:	683b      	ldr	r3, [r7, #0]
- 8001516:	2b07      	cmp	r3, #7
- 8001518:	ddd1      	ble.n	80014be <DS18B20_Read+0x1a>
-	}
-	return value;
- 800151a:	79fb      	ldrb	r3, [r7, #7]
-}
- 800151c:	4618      	mov	r0, r3
- 800151e:	3708      	adds	r7, #8
- 8001520:	46bd      	mov	sp, r7
- 8001522:	bd80      	pop	{r7, pc}
- 8001524:	40010c00 	.word	0x40010c00
-
-08001528 <DS18B20_Temp2Float>:
-
-float DS18B20_Temp2Float(uint16_t number)
-{
- 8001528:	b5b0      	push	{r4, r5, r7, lr}
- 800152a:	b088      	sub	sp, #32
- 800152c:	af00      	add	r7, sp, #0
- 800152e:	4603      	mov	r3, r0
- 8001530:	80fb      	strh	r3, [r7, #6]
-	uint16_t aux;
-	float result = 0;
- 8001532:	f04f 0300 	mov.w	r3, #0
- 8001536:	61bb      	str	r3, [r7, #24]
-	float signo;
-	uint16_t mask = 0b1111100000000000;
- 8001538:	f44f 4378 	mov.w	r3, #63488	; 0xf800
- 800153c:	827b      	strh	r3, [r7, #18]
-	// extracción del signo
-	if((number & mask) > 0)
- 800153e:	88fa      	ldrh	r2, [r7, #6]
- 8001540:	8a7b      	ldrh	r3, [r7, #18]
- 8001542:	4013      	ands	r3, r2
- 8001544:	b29b      	uxth	r3, r3
- 8001546:	2b00      	cmp	r3, #0
- 8001548:	d002      	beq.n	8001550 <DS18B20_Temp2Float+0x28>
-		signo = -1;
- 800154a:	4b32      	ldr	r3, [pc, #200]	; (8001614 <DS18B20_Temp2Float+0xec>)
- 800154c:	617b      	str	r3, [r7, #20]
- 800154e:	e002      	b.n	8001556 <DS18B20_Temp2Float+0x2e>
-	else
-		signo = 1;
- 8001550:	f04f 537e 	mov.w	r3, #1065353216	; 0x3f800000
- 8001554:	617b      	str	r3, [r7, #20]
-	// calculo de la magnitud
-	mask = 0b0000011111111111;
- 8001556:	f240 73ff 	movw	r3, #2047	; 0x7ff
- 800155a:	827b      	strh	r3, [r7, #18]
-	// parte entera
-	if (signo == -1)
- 800155c:	492d      	ldr	r1, [pc, #180]	; (8001614 <DS18B20_Temp2Float+0xec>)
- 800155e:	6978      	ldr	r0, [r7, #20]
- 8001560:	f7ff fce8 	bl	8000f34 <__aeabi_fcmpeq>
- 8001564:	4603      	mov	r3, r0
- 8001566:	2b00      	cmp	r3, #0
- 8001568:	d00c      	beq.n	8001584 <DS18B20_Temp2Float+0x5c>
-	{                     // complemento A2
-		aux = ~number & mask;
- 800156a:	f9b7 3006 	ldrsh.w	r3, [r7, #6]
- 800156e:	43db      	mvns	r3, r3
- 8001570:	b21a      	sxth	r2, r3
- 8001572:	f9b7 3012 	ldrsh.w	r3, [r7, #18]
- 8001576:	4013      	ands	r3, r2
- 8001578:	b21b      	sxth	r3, r3
- 800157a:	83fb      	strh	r3, [r7, #30]
-		aux+=1;
- 800157c:	8bfb      	ldrh	r3, [r7, #30]
- 800157e:	3301      	adds	r3, #1
- 8001580:	83fb      	strh	r3, [r7, #30]
- 8001582:	e003      	b.n	800158c <DS18B20_Temp2Float+0x64>
-	}
-	else
-	{
-		aux = number & mask;
- 8001584:	88fa      	ldrh	r2, [r7, #6]
- 8001586:	8a7b      	ldrh	r3, [r7, #18]
- 8001588:	4013      	ands	r3, r2
- 800158a:	83fb      	strh	r3, [r7, #30]
-	}
-// parte decimal
-	result = 0;
- 800158c:	f04f 0300 	mov.w	r3, #0
- 8001590:	61bb      	str	r3, [r7, #24]
-	mask = 0b0000000000000001;
- 8001592:	2301      	movs	r3, #1
- 8001594:	827b      	strh	r3, [r7, #18]
-	for (int i=0;i<12;i++)
- 8001596:	2300      	movs	r3, #0
- 8001598:	60fb      	str	r3, [r7, #12]
- 800159a:	e02e      	b.n	80015fa <DS18B20_Temp2Float+0xd2>
-	{
-		 if((aux & mask)>0)
- 800159c:	8bfa      	ldrh	r2, [r7, #30]
- 800159e:	8a7b      	ldrh	r3, [r7, #18]
- 80015a0:	4013      	ands	r3, r2
- 80015a2:	b29b      	uxth	r3, r3
- 80015a4:	2b00      	cmp	r3, #0
- 80015a6:	d022      	beq.n	80015ee <DS18B20_Temp2Float+0xc6>
-			 result = result + .0625 *pow(2, i);
- 80015a8:	69b8      	ldr	r0, [r7, #24]
- 80015aa:	f7fe fff1 	bl	8000590 <__aeabi_f2d>
- 80015ae:	4604      	mov	r4, r0
- 80015b0:	460d      	mov	r5, r1
- 80015b2:	68f8      	ldr	r0, [r7, #12]
- 80015b4:	f7fe ffda 	bl	800056c <__aeabi_i2d>
- 80015b8:	4602      	mov	r2, r0
- 80015ba:	460b      	mov	r3, r1
- 80015bc:	f04f 0000 	mov.w	r0, #0
- 80015c0:	f04f 4180 	mov.w	r1, #1073741824	; 0x40000000
- 80015c4:	f004 fc4c 	bl	8005e60 <pow>
- 80015c8:	f04f 0200 	mov.w	r2, #0
- 80015cc:	4b12      	ldr	r3, [pc, #72]	; (8001618 <DS18B20_Temp2Float+0xf0>)
- 80015ce:	f7ff f837 	bl	8000640 <__aeabi_dmul>
- 80015d2:	4602      	mov	r2, r0
- 80015d4:	460b      	mov	r3, r1
- 80015d6:	4620      	mov	r0, r4
- 80015d8:	4629      	mov	r1, r5
- 80015da:	f7fe fe7b 	bl	80002d4 <__adddf3>
- 80015de:	4602      	mov	r2, r0
- 80015e0:	460b      	mov	r3, r1
- 80015e2:	4610      	mov	r0, r2
- 80015e4:	4619      	mov	r1, r3
- 80015e6:	f7ff fb03 	bl	8000bf0 <__aeabi_d2f>
- 80015ea:	4603      	mov	r3, r0
- 80015ec:	61bb      	str	r3, [r7, #24]
-		 mask = mask << 1;
- 80015ee:	8a7b      	ldrh	r3, [r7, #18]
- 80015f0:	005b      	lsls	r3, r3, #1
- 80015f2:	827b      	strh	r3, [r7, #18]
-	for (int i=0;i<12;i++)
- 80015f4:	68fb      	ldr	r3, [r7, #12]
- 80015f6:	3301      	adds	r3, #1
- 80015f8:	60fb      	str	r3, [r7, #12]
- 80015fa:	68fb      	ldr	r3, [r7, #12]
- 80015fc:	2b0b      	cmp	r3, #11
- 80015fe:	ddcd      	ble.n	800159c <DS18B20_Temp2Float+0x74>
-	}
-	return (signo * result);
- 8001600:	69b9      	ldr	r1, [r7, #24]
- 8001602:	6978      	ldr	r0, [r7, #20]
- 8001604:	f7fe fdac 	bl	8000160 <__aeabi_fmul>
- 8001608:	4603      	mov	r3, r0
-}
- 800160a:	4618      	mov	r0, r3
- 800160c:	3720      	adds	r7, #32
- 800160e:	46bd      	mov	sp, r7
- 8001610:	bdb0      	pop	{r4, r5, r7, pc}
- 8001612:	bf00      	nop
- 8001614:	bf800000 	.word	0xbf800000
- 8001618:	3fb00000 	.word	0x3fb00000
+ 8001614:	bf00      	nop
+ 8001616:	3710      	adds	r7, #16
+ 8001618:	46bd      	mov	sp, r7
+ 800161a:	bd80      	pop	{r7, pc}
 
 0800161c <main>:
 /**
@@ -2415,7 +2405,7 @@ int main(void)
  8001668:	2340      	movs	r3, #64	; 0x40
  800166a:	9300      	str	r3, [sp, #0]
  800166c:	4b48      	ldr	r3, [pc, #288]	; (8001790 <main+0x174>)
- 800166e:	f7ff fcb9 	bl	8000fe4 <Lcd_create>
+ 800166e:	f7ff fe47 	bl	8001300 <Lcd_create>
  8001672:	f107 041c 	add.w	r4, r7, #28
  8001676:	463d      	mov	r5, r7
  8001678:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
@@ -2428,7 +2418,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 	  Presence = DS18B20_Start ();
- 8001684:	f7ff fe8e 	bl	80013a4 <DS18B20_Start>
+ 8001684:	f7ff fd00 	bl	8001088 <DS18B20_Start>
  8001688:	4603      	mov	r3, r0
  800168a:	f887 305b 	strb.w	r3, [r7, #91]	; 0x5b
 	  HAL_Delay (1);
@@ -2436,10 +2426,10 @@ int main(void)
  8001690:	f000 fb70 	bl	8001d74 <HAL_Delay>
 	  DS18B20_Write (0xCC);  // skip ROM
  8001694:	20cc      	movs	r0, #204	; 0xcc
- 8001696:	f7ff feb9 	bl	800140c <DS18B20_Write>
+ 8001696:	f7ff fd2b 	bl	80010f0 <DS18B20_Write>
 	  DS18B20_Write (0x44);  // convert t
  800169a:	2044      	movs	r0, #68	; 0x44
- 800169c:	f7ff feb6 	bl	800140c <DS18B20_Write>
+ 800169c:	f7ff fd28 	bl	80010f0 <DS18B20_Write>
 	  HAL_Delay (800);
  80016a0:	f44f 7048 	mov.w	r0, #800	; 0x320
  80016a4:	f000 fb66 	bl	8001d74 <HAL_Delay>
@@ -2447,7 +2437,7 @@ int main(void)
 	  Presence = Presence; // ToDo: chequeo de errores
 
 	  Presence = DS18B20_Start ();
- 80016a8:	f7ff fe7c 	bl	80013a4 <DS18B20_Start>
+ 80016a8:	f7ff fcee 	bl	8001088 <DS18B20_Start>
  80016ac:	4603      	mov	r3, r0
  80016ae:	f887 305b 	strb.w	r3, [r7, #91]	; 0x5b
 	  HAL_Delay(1);
@@ -2455,17 +2445,17 @@ int main(void)
  80016b4:	f000 fb5e 	bl	8001d74 <HAL_Delay>
 	  DS18B20_Write (0xCC);  // skip ROM
  80016b8:	20cc      	movs	r0, #204	; 0xcc
- 80016ba:	f7ff fea7 	bl	800140c <DS18B20_Write>
+ 80016ba:	f7ff fd19 	bl	80010f0 <DS18B20_Write>
 	  DS18B20_Write (0xBE);  // Read Scratch-pad
  80016be:	20be      	movs	r0, #190	; 0xbe
- 80016c0:	f7ff fea4 	bl	800140c <DS18B20_Write>
+ 80016c0:	f7ff fd16 	bl	80010f0 <DS18B20_Write>
 
 	  for(int i = 0; i<8; i++)
  80016c4:	2300      	movs	r3, #0
  80016c6:	65fb      	str	r3, [r7, #92]	; 0x5c
  80016c8:	e00c      	b.n	80016e4 <main+0xc8>
 		  scratchPad[i] = DS18B20_Read();
- 80016ca:	f7ff feeb 	bl	80014a4 <DS18B20_Read>
+ 80016ca:	f7ff fd5d 	bl	8001188 <DS18B20_Read>
  80016ce:	4603      	mov	r3, r0
  80016d0:	4619      	mov	r1, r3
  80016d2:	f107 024c 	add.w	r2, r7, #76	; 0x4c
@@ -2494,7 +2484,7 @@ int main(void)
 	  temperature = DS18B20_Temp2Float(buffer);
  8001706:	f8b7 3058 	ldrh.w	r3, [r7, #88]	; 0x58
  800170a:	4618      	mov	r0, r3
- 800170c:	f7ff ff0c 	bl	8001528 <DS18B20_Temp2Float>
+ 800170c:	f7ff fd7e 	bl	800120c <DS18B20_Temp2Float>
  8001710:	6578      	str	r0, [r7, #84]	; 0x54
 
 	  Lcd_cursor(&lcd, 0,0);
@@ -2502,44 +2492,44 @@ int main(void)
  8001716:	2200      	movs	r2, #0
  8001718:	2100      	movs	r1, #0
  800171a:	4618      	mov	r0, r3
- 800171c:	f7ff fd3a 	bl	8001194 <Lcd_cursor>
+ 800171c:	f7ff fec8 	bl	80014b0 <Lcd_cursor>
 	  Lcd_string(&lcd, "Temp Datalogger");
  8001720:	f107 031c 	add.w	r3, r7, #28
  8001724:	491b      	ldr	r1, [pc, #108]	; (8001794 <main+0x178>)
  8001726:	4618      	mov	r0, r3
- 8001728:	f7ff fd14 	bl	8001154 <Lcd_string>
+ 8001728:	f7ff fea2 	bl	8001470 <Lcd_string>
 	  Lcd_cursor(&lcd, 1,0);
  800172c:	f107 031c 	add.w	r3, r7, #28
  8001730:	2200      	movs	r2, #0
  8001732:	2101      	movs	r1, #1
  8001734:	4618      	mov	r0, r3
- 8001736:	f7ff fd2d 	bl	8001194 <Lcd_cursor>
+ 8001736:	f7ff febb 	bl	80014b0 <Lcd_cursor>
 	  Lcd_string(&lcd, "T1=");
  800173a:	f107 031c 	add.w	r3, r7, #28
  800173e:	4916      	ldr	r1, [pc, #88]	; (8001798 <main+0x17c>)
  8001740:	4618      	mov	r0, r3
- 8001742:	f7ff fd07 	bl	8001154 <Lcd_string>
+ 8001742:	f7ff fe95 	bl	8001470 <Lcd_string>
 	  Lcd_float_lim(&lcd, temperature, 1);
  8001746:	f107 031c 	add.w	r3, r7, #28
  800174a:	2201      	movs	r2, #1
  800174c:	6d79      	ldr	r1, [r7, #84]	; 0x54
  800174e:	4618      	mov	r0, r3
- 8001750:	f7ff fcb4 	bl	80010bc <Lcd_float_lim>
+ 8001750:	f7ff fe42 	bl	80013d8 <Lcd_float_lim>
 	  Lcd_string(&lcd, " ");
  8001754:	f107 031c 	add.w	r3, r7, #28
  8001758:	4910      	ldr	r1, [pc, #64]	; (800179c <main+0x180>)
  800175a:	4618      	mov	r0, r3
- 800175c:	f7ff fcfa 	bl	8001154 <Lcd_string>
+ 800175c:	f7ff fe88 	bl	8001470 <Lcd_string>
 	  lcd_write_data(&lcd, 210); // imprime "°"
  8001760:	f107 031c 	add.w	r3, r7, #28
  8001764:	21d2      	movs	r1, #210	; 0xd2
  8001766:	4618      	mov	r0, r3
- 8001768:	f7ff fd5c 	bl	8001224 <lcd_write_data>
+ 8001768:	f7ff feea 	bl	8001540 <lcd_write_data>
 	  Lcd_string(&lcd, "C");
  800176c:	f107 031c 	add.w	r3, r7, #28
  8001770:	490b      	ldr	r1, [pc, #44]	; (80017a0 <main+0x184>)
  8001772:	4618      	mov	r0, r3
- 8001774:	f7ff fcee 	bl	8001154 <Lcd_string>
+ 8001774:	f7ff fe7c 	bl	8001470 <Lcd_string>
 
 	  HAL_GPIO_TogglePin (GPIOC, LED_Pin);
  8001778:	f44f 5100 	mov.w	r1, #8192	; 0x2000
@@ -2850,9 +2840,9 @@ static void MX_GPIO_Init(void)
                           |GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
  800195e:	2200      	movs	r2, #0
- 8001960:	f44f 7100 	mov.w	r1, #512	; 0x200
+ 8001960:	f44f 7140 	mov.w	r1, #768	; 0x300
  8001964:	481c      	ldr	r0, [pc, #112]	; (80019d8 <MX_GPIO_Init+0x104>)
  8001966:	f000 fca8 	bl	80022ba <HAL_GPIO_WritePin>
 
@@ -2896,9 +2886,9 @@ static void MX_GPIO_Init(void)
  800199e:	480d      	ldr	r0, [pc, #52]	; (80019d4 <MX_GPIO_Init+0x100>)
  80019a0:	f000 faf0 	bl	8001f84 <HAL_GPIO_Init>
 
-  /*Configure GPIO pin : PB9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_9;
- 80019a4:	f44f 7300 	mov.w	r3, #512	; 0x200
+  /*Configure GPIO pins : PB8 PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+ 80019a4:	f44f 7340 	mov.w	r3, #768	; 0x300
  80019a8:	613b      	str	r3, [r7, #16]
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
  80019aa:	2301      	movs	r3, #1
