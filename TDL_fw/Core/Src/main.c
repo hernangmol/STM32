@@ -35,7 +35,7 @@ typedef struct
 	int ID;
 	char ROM_NO[8];
 	char estado;
-	char  temp;
+	float  temp;
 }
 tempSens_t;
 
@@ -44,7 +44,7 @@ tempSens_t;
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 //#define LEER_ROM
-#define N 1
+#define N 2
 
 /* USER CODE END PD */
 
@@ -107,12 +107,14 @@ int main(void)
   HAL_TIM_Base_Start(&htim1);
   uint8_t Presence;
   uint8_t scratchPad[8];
-  float temperature;
+  uint16_t buffer;
+  //float temperature;
 
   Lcd_PortType ports[] = { GPIOA, GPIOA, GPIOA, GPIOA };
   Lcd_PinType pins[] = {GPIO_PIN_2, GPIO_PIN_3, GPIO_PIN_4, GPIO_PIN_5};
   Lcd_HandleTypeDef lcd;
   lcd = Lcd_create(ports, pins, GPIOA, GPIO_PIN_6, GPIOA, GPIO_PIN_1, LCD_4_BIT_MODE);
+
 
 #ifdef LEER_ROM
   Presence = DS18B20_Start ();
@@ -135,12 +137,18 @@ int main(void)
   HAL_Delay(10000);
 #endif
   // Sensor 1:
-  uint8_t aux[8]= {0x28, 0xEB, 0x42, 0x76, 0xE0, 0x01, 0x3C, 0x1A};
+  uint8_t aux_0[8]= {0x28, 0xEB, 0x42, 0x76, 0xE0, 0x01, 0x3C, 0x1A};
+  uint8_t aux_1[8]= {0x28, 0x2F, 0x9B, 0x76, 0xE0, 0x01, 0x3C, 0xF4};
   for(int i=0; i<8; i++)
   {
-	  sensor[0].ROM_NO[i]= aux[i];
+	  sensor[0].ROM_NO[i]= aux_0[i];
   }
 
+  // Sensor 2:
+  for(int i=0; i<8; i++)
+  {
+	  sensor[1].ROM_NO[i]= aux_1[i];
+  }
 
   /* USER CODE END 2 */
 
@@ -167,6 +175,7 @@ int main(void)
 //	  for(int i = 0; i<8; i++)
 //		  scratchPad[i] = DS18B20_Read();
 
+
 	  Presence = DS18B20_Start ();
 	  HAL_Delay(1);
 	  DS18B20_Write (0x55);  // match ROM
@@ -178,18 +187,36 @@ int main(void)
 	  for(int i = 0; i<8; i++)
 		  scratchPad[i] = DS18B20_Read();
 
-	  uint16_t buffer = scratchPad[1];
+	  buffer = scratchPad[1];
 	  buffer = (buffer << 8) + scratchPad[0];
-	  temperature = DS18B20_Temp2Float(buffer);
+	  sensor[0].temp = DS18B20_Temp2Float(buffer);
+
+	  Presence = DS18B20_Start ();
+	  HAL_Delay(1);
+	  DS18B20_Write (0x55);  // match ROM
+	  for(int i=0;i<8;i++)
+	  {
+		  DS18B20_Write (sensor[1].ROM_NO[i]);
+	  }
+	  DS18B20_Write (0xBE);  // Read Scratch-pad
+	  for(int i = 0; i<8; i++)
+		  scratchPad[i] = DS18B20_Read();
+
+	  buffer = scratchPad[1];
+	  buffer = (buffer << 8) + scratchPad[0];
+	  sensor[1].temp = DS18B20_Temp2Float(buffer);
+	  //temperature = DS18B20_Temp2Float(buffer);
 	  Lcd_clear;
 	  Lcd_cursor(&lcd, 0,0);
 	  Lcd_string(&lcd, "Temp Datalogger");
 	  Lcd_cursor(&lcd, 1,0);
 	  Lcd_string(&lcd, "T1=");
-	  Lcd_float_lim(&lcd, temperature, 1);
+	  Lcd_float_lim(&lcd, sensor[0].temp, 1);
 	  Lcd_string(&lcd, " ");
-	  lcd_write_data(&lcd, 210); // imprime "°"
-	  Lcd_string(&lcd, "C");
+	  Lcd_string(&lcd, "T2=");
+	  Lcd_float_lim(&lcd, sensor[1].temp, 1);
+	  //lcd_write_data(&lcd, 210); // imprime "°"
+	  //Lcd_string(&lcd, "C");
 	  HAL_GPIO_TogglePin (GPIOC, LED_Pin);
 
 	  }
