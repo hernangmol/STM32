@@ -44,7 +44,7 @@ tempSens_t;
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 //#define LEER_ROM
-#define N 2
+#define N 4
 
 /* USER CODE END PD */
 
@@ -137,18 +137,15 @@ int main(void)
   HAL_Delay(10000);
 #endif
   // Sensor 1:
-  uint8_t aux_0[8]= {0x28, 0xEB, 0x42, 0x76, 0xE0, 0x01, 0x3C, 0x1A};
-  uint8_t aux_1[8]= {0x28, 0x2F, 0x9B, 0x76, 0xE0, 0x01, 0x3C, 0xF4};
-  for(int i=0; i<8; i++)
-  {
-	  sensor[0].ROM_NO[i]= aux_0[i];
-  }
-
-  // Sensor 2:
-  for(int i=0; i<8; i++)
-  {
-	  sensor[1].ROM_NO[i]= aux_1[i];
-  }
+  uint8_t aux[4][8]= {{0x28, 0xEB, 0x42, 0x76, 0xE0, 0x01, 0x3C, 0x1A},
+		  	  	  	 {0x28, 0x2F, 0x9B, 0x76, 0xE0, 0x01, 0x3C, 0xF4},
+					 {0x28, 0x2C, 0x4D, 0x43, 0xD4, 0xE1, 0x3C, 0x93},
+					 {0x28, 0xBF, 0x88, 0x43, 0xD4, 0xE1, 0x3C, 0x8B}};
+  for(int j=0; j<4;j++)
+	  for(int i=0; i<8; i++)
+	  {
+		  sensor[j].ROM_NO[i]= aux[j][i];
+	  }
 
   /* USER CODE END 2 */
 
@@ -175,7 +172,7 @@ int main(void)
 //	  for(int i = 0; i<8; i++)
 //		  scratchPad[i] = DS18B20_Read();
 
-
+///////////////////////////////////////////////////////////
 	  Presence = DS18B20_Start ();
 	  HAL_Delay(1);
 	  DS18B20_Write (0x55);  // match ROM
@@ -190,7 +187,7 @@ int main(void)
 	  buffer = scratchPad[1];
 	  buffer = (buffer << 8) + scratchPad[0];
 	  sensor[0].temp = DS18B20_Temp2Float(buffer);
-
+/////////////////////////////////////////////////////////////
 	  Presence = DS18B20_Start ();
 	  HAL_Delay(1);
 	  DS18B20_Write (0x55);  // match ROM
@@ -206,15 +203,51 @@ int main(void)
 	  buffer = (buffer << 8) + scratchPad[0];
 	  sensor[1].temp = DS18B20_Temp2Float(buffer);
 	  //temperature = DS18B20_Temp2Float(buffer);
+	  /////////////////////////////////////////////////////////////
+	  	  Presence = DS18B20_Start ();
+	  	  HAL_Delay(1);
+	  	  DS18B20_Write (0x55);  // match ROM
+	  	  for(int i=0;i<8;i++)
+	  	  {
+	  		  DS18B20_Write (sensor[2].ROM_NO[i]);
+	  	  }
+	  	  DS18B20_Write (0xBE);  // Read Scratch-pad
+	  	  for(int i = 0; i<8; i++)
+	  		  scratchPad[i] = DS18B20_Read();
+
+	  	  buffer = scratchPad[1];
+	  	  buffer = (buffer << 8) + scratchPad[0];
+	  	  sensor[2].temp = DS18B20_Temp2Float(buffer);
+		  /////////////////////////////////////////////////////////////
+		  	  Presence = DS18B20_Start ();
+		  	  HAL_Delay(1);
+		  	  DS18B20_Write (0x55);  // match ROM
+		  	  for(int i=0;i<8;i++)
+		  	  {
+		  		  DS18B20_Write (sensor[3].ROM_NO[i]);
+		  	  }
+		  	  DS18B20_Write (0xBE);  // Read Scratch-pad
+		  	  for(int i = 0; i<8; i++)
+		  		  scratchPad[i] = DS18B20_Read();
+
+		  	  buffer = scratchPad[1];
+		  	  buffer = (buffer << 8) + scratchPad[0];
+		  	  sensor[3].temp = DS18B20_Temp2Float(buffer);
+
+
 	  Lcd_clear;
 	  Lcd_cursor(&lcd, 0,0);
-	  Lcd_string(&lcd, "Temp Datalogger");
-	  Lcd_cursor(&lcd, 1,0);
 	  Lcd_string(&lcd, "T1=");
 	  Lcd_float_lim(&lcd, sensor[0].temp, 1);
 	  Lcd_string(&lcd, " ");
 	  Lcd_string(&lcd, "T2=");
 	  Lcd_float_lim(&lcd, sensor[1].temp, 1);
+	  Lcd_cursor(&lcd, 1,0);
+	  Lcd_string(&lcd, "T3=");
+	  Lcd_float_lim(&lcd, sensor[2].temp, 1);
+	  Lcd_string(&lcd, " ");
+	  Lcd_string(&lcd, "T4=");
+	  Lcd_float_lim(&lcd, sensor[3].temp, 1);
 	  //lcd_write_data(&lcd, 210); // imprime "°"
 	  //Lcd_string(&lcd, "C");
 	  HAL_GPIO_TogglePin (GPIOC, LED_Pin);
