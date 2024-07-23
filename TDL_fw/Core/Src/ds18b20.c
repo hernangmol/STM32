@@ -7,7 +7,7 @@
 
 #include "ds18b20.h"
 
-extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim3;
 
 void Set_Pin_Output(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 {
@@ -29,8 +29,8 @@ void Set_Pin_Input(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 
 void delay_us (uint16_t us)
 {
-	__HAL_TIM_SET_COUNTER(&htim1,0);  // set the counter value a 0
-	while (__HAL_TIM_GET_COUNTER(&htim1) < us);  // wait for the counter to reach the us input in the parameter
+	__HAL_TIM_SET_COUNTER(&htim3,0);  // set the counter value a 0
+	while (__HAL_TIM_GET_COUNTER(&htim3) < us);  // wait for the counter to reach the us input in the parameter
 }
 
 uint8_t DS18B20_Start (void)
