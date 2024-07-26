@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -45,6 +46,8 @@ tempSens_t;
 /* USER CODE BEGIN PD */
 //#define LEER_ROM
 #define N 4
+FATFS fs;
+FIL fil;
 
 /* USER CODE END PD */
 
@@ -54,12 +57,19 @@ tempSens_t;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+SPI_HandleTypeDef hspi2;
+
+TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 //TIM_HandleTypeDef htim1; // Se utiliza para temporización en us (one wire)
-TIM_HandleTypeDef htim3;
+//TIM_HandleTypeDef htim3;
 tempSens_t sensor[N];
+
+FATFS fs;
+FIL fil;
+uint8_t count = 0;
 
 /* USER CODE END PV */
 
@@ -67,6 +77,8 @@ tempSens_t sensor[N];
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_SPI2_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -105,19 +117,27 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM3_Init();
+  MX_SPI2_Init();
+  MX_FATFS_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  //HAL_TIM_Base_Start(&htim1);
+
   HAL_TIM_Base_Start(&htim3);
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_Delay(1000);
+
   uint8_t Presence;
   uint8_t scratchPad[8];
   uint16_t buffer;
+  uint16_t sample = 0;
+  char message[25];
+  int m;
   //float temperature;
 
   Lcd_PortType ports[] = { GPIOA, GPIOA, GPIOA, GPIOA };
   Lcd_PinType pins[] = {GPIO_PIN_2, GPIO_PIN_3, GPIO_PIN_4, GPIO_PIN_5};
   Lcd_HandleTypeDef lcd;
   lcd = Lcd_create(ports, pins, GPIOA, GPIO_PIN_6, GPIOA, GPIO_PIN_1, LCD_4_BIT_MODE);
-
 
 #ifdef LEER_ROM
   Presence = DS18B20_Start ();
@@ -150,6 +170,12 @@ int main(void)
 		  sensor[j].ROM_NO[i]= aux[j][i];
 	  }
 
+	f_mount(&fs, "", 0);
+	f_open(&fil, "temp.log", FA_OPEN_ALWAYS | FA_WRITE | FA_READ);
+	f_lseek(&fil, fil.fsize);
+	f_puts("sample, T1, T2, T3, T4\n", &fil);
+	f_close(&fil);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -165,7 +191,7 @@ int main(void)
 	  HAL_Delay (1);
 	  DS18B20_Write (0xCC);  // skip ROM
 	  DS18B20_Write (0x44);  // convert t
-	  HAL_Delay (999 - N);
+	  HAL_Delay (800);
 	  Presence = Presence; // ToDo: chequeo de errores
 //	  // Lectura de temperatura (un solo sensor en bus)
 //	  Presence = DS18B20_Start ();
@@ -208,9 +234,29 @@ int main(void)
 	  Lcd_float_lim(&lcd, sensor[3].temp, 1);
 	  //lcd_write_data(&lcd, 210); // imprime "°"
 	  //Lcd_string(&lcd, "C");
-	  HAL_GPIO_TogglePin (GPIOC, LED_Pin);
 
+//	   f_mount(&fs, "", 0);
+//	   f_open(&fil, "write.txt", FA_OPEN_ALWAYS | FA_WRITE | FA_READ);
+//	   f_lseek(&fil, fil.fsize);
+//	   f_puts("Hello from CENADIF\n", &fil);
+//	   f_close(&fil);
 
+	if(count == 10) // cada 10 segundos
+	{
+		f_mount(&fs, "", 0);
+		f_open(&fil, "temp.log", FA_OPEN_ALWAYS | FA_WRITE | FA_READ);
+		f_lseek(&fil, fil.fsize);
+		m = sprintf(message, "%d, ", sample);
+		m += sprintf(message+m, "%.2f, ",sensor[0].temp );
+		m += sprintf(message+m, "%.2f, ",sensor[1].temp );
+		m += sprintf(message+m, "%.2f, ",sensor[2].temp );
+		m += sprintf(message+m, "%.2f\n",sensor[3].temp );
+		f_puts(message, &fil);
+		f_close(&fil);
+		count = 0;
+		sample ++;
+		//HAL_GPIO_TogglePin (GPIOC, LED_Pin);
+	}
   }
   /* USER CODE END 3 */
 }
@@ -245,13 +291,96 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_SOFT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
+
+}
+
+/**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 36000-1;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 1000;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
 }
 
 /**
@@ -322,7 +451,7 @@ static void MX_GPIO_Init(void)
                           |GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -340,8 +469,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB8 PB9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+  /*Configure GPIO pins : PB12 PB8 PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_8|GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -350,7 +479,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if(htim->Instance == TIM2)
+  {
+	  count ++;
+	  HAL_GPIO_TogglePin (GPIOC, LED_Pin);
+  }
+}
 /* USER CODE END 4 */
 
 /**
