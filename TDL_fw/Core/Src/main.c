@@ -70,6 +70,7 @@ tempSens_t sensor[N];
 FATFS fs;
 FIL fil;
 uint8_t count = 0;
+uint8_t recording = 0;
 
 /* USER CODE END PV */
 
@@ -112,6 +113,8 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
+  HAL_GPIO_TogglePin (GPIOA, GPIO_PIN_7);
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -132,6 +135,7 @@ int main(void)
   uint16_t sample = 0;
   char message[25];
   int m;
+  //uint8_t recording;
   //float temperature;
 
   Lcd_PortType ports[] = { GPIOA, GPIOA, GPIOA, GPIOA };
@@ -241,7 +245,7 @@ int main(void)
 //	   f_puts("Hello from CENADIF\n", &fil);
 //	   f_close(&fil);
 
-	if(count == 10) // cada 10 segundos
+	if((count % 10) == 0 && recording == 1) // cada 10 segundos
 	{
 		f_mount(&fs, "", 0);
 		f_open(&fil, "temp.log", FA_OPEN_ALWAYS | FA_WRITE | FA_READ);
@@ -448,7 +452,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
+                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
@@ -461,13 +465,19 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PA1 PA2 PA3 PA4
-                           PA5 PA6 */
+                           PA5 PA6 PA7 */
   GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5|GPIO_PIN_6;
+                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB0 PB1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB12 PB8 PB9 */
   GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_8|GPIO_PIN_9;
@@ -483,8 +493,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if(htim->Instance == TIM2)
   {
-	  count ++;
-	  HAL_GPIO_TogglePin (GPIOC, LED_Pin);
+	  if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == 1)
+		  recording = 1;
+	  if (recording == 1)
+	  {
+		  count ++;
+		  //HAL_GPIO_TogglePin (GPIOC, LED_Pin);
+		  HAL_GPIO_TogglePin (GPIOA, GPIO_PIN_7);
+	  }
   }
 }
 /* USER CODE END 4 */
